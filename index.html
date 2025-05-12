@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatracter - Chat with Your Favorite Characters</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <header>
+    <h1 class="app-title">CHAT-RACTER</h1>
+    <p class="app-subtitle">Chat like your fav character</p>
+  </header>
+  
+  <main>
+    <section class="character-select">
+      <h2 class="character-header">Choose a character you love!</h2>
+      <div class="character-list">
+        <div class="character-item active" data-character="harvey">
+          <div class="character-avatar">
+            <img src="https://placehold.co/100x100/ff0000/ffffff?text=H" alt="Harvey Specter">
+          </div>
+          <div class="character-name">Harvey Specter</div>
+        </div>
+        
+        <div class="character-item" data-character="walter">
+          <div class="character-avatar">
+            <img src="https://placehold.co/100x100/0000ff/ffffff?text=W" alt="Walter White">
+          </div>
+          <div class="character-name">Walter White</div>
+        </div>
+        
+        <div class="character-item" data-character="tony">
+          <div class="character-avatar">
+            <img src="https://placehold.co/100x100/ff8000/ffffff?text=T" alt="Tony Stark">
+          </div>
+          <div class="character-name">Tony Stark</div>
+        </div>
+        
+        <div class="character-item" data-character="tyrion">
+          <div class="character-avatar">
+            <img src="https://placehold.co/100x100/800080/ffffff?text=T" alt="Tyrion Lannister">
+          </div>
+          <div class="character-name">Tyrion Lannister</div>
+        </div>
+        
+        <div class="character-item" data-character="lucifer">
+          <div class="character-avatar">
+            <img src="https://placehold.co/100x100/000000/ff0000?text=L" alt="Lucifer Morningstar">
+          </div>
+          <div class="character-name">Lucifer Morningstar</div>
+        </div>
+        
+        <div class="character-item" data-character="professor">
+          <div class="character-avatar">
+            <img src="https://placehold.co/100x100/008000/ffffff?text=P" alt="The Professor">
+          </div>
+          <div class="character-name">The Professor</div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-intro">
+          <p class="chat-intro-text">Trouble? Questions? A quest for glory? Say the word. I'm on it!</p>
+          <div class="example-questions">
+            <span class="example-question">How would you negotiate a salary?</span>
+            <span class="example-question">What's your secret to success?</span>
+            <span class="example-question">How do I deal with difficult people?</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+          <input type="text" class="chat-input" id="messageInput" placeholder="Ask Anything">
+          <button class="send-button" id="sendButton">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="features-row">
+    <button class="feature-button active" id="chatMode">Chat Mode</button>
+    <button class="feature-button" id="battleMode">Battle Mode</button>
+     <!-- <button class="feature-button" id="voiceMode">Voice Mode</button>-->
+    <button class="feature-button" id="settingsButton">Settings</button>
+  </div>
+
+  <div class="battle-container" id="battleContainer" style="display: none;">
+    <!-- Battle mode content will be dynamically added here -->
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
