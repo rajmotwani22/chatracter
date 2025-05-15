@@ -1,17 +1,13 @@
 {
-  "name": "chaterbot",
+  "name": "character-chatbot",
   "version": "1.0.0",
-  "main": "main.js",
-  "scripts": {
-   
-   "start": "vercel dev",
-   "deploy": "vercel --prod"
+  "description": "Chat with fictional characters like Harvey Specter, Walter White, and others",
+  "main": "index.js",
+  "dependencies": {
+    "openai": "^3.2.1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "http-server": "^14.1.1"
+  "scripts": {
+    "start": "vercel dev",
+    "deploy": "vercel --prod"
   }
 }
