@@ -27,7 +27,7 @@ const characterImages = {
     walter: "assets/images/walter.jpg",
     tony: "assets/images/tony.jpg",
     tyrion: "assets/images/tyrion.jpg",
-    lucifer: "assets/images/Lucifer.jpg",
+    lucifer: "assets/images/lucifer.jpg",
     professor: "assets/images/professor.jpg"
   };
 // Character background images (for enhanced UI)
@@ -1087,34 +1087,29 @@ function toggleDarkMode() {
     debateMessages.appendChild(loadingMessage);
     debateMessages.scrollTop = debateMessages.scrollHeight;
     
-    // Prepare the prompt based on debate history
-    let prompt;
-    
-    if (isFirst) {
-      prompt = `The topic is: "${topic}". Give your opinion on this topic. Be concise.`;
-    } else {
-      // Build context from debate history
-      let context = `The topic is: "${topic}". Here's the conversation so far:\n\n`;
-      
-      debateHistory.forEach(entry => {
-        context += `${getCharacterName(entry.character)}: ${entry.response}\n\n`;
+    try {
+      // Call the serverless function instead of OpenAI directly
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mode: 'battle',
+          character: character,
+          topic: topic,
+          debateHistory: debateHistory,
+          userName: userInfo.name || ''
+        }),
       });
       
-      // Add instructions
-      context += `Now respond as ${getCharacterName(character)}. Address the previous points made by the other characters. Be concise and stay in character.`;
-      prompt = context;
-    }
-    
-    try {
-      // Set the currentCharacter to the selected character
-      const tempCurrent = currentCharacter;
-      currentCharacter = character;
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("API Error:", errorData);
+        throw new Error(errorData.error || 'Failed to get response');
+      }
       
-      // Get response from API
-      const response = await getOpenAIResponse(prompt);
-      
-      // Restore the current character
-      currentCharacter = tempCurrent;
+      const data = await response.json();
       
       // Remove loading message
       debateMessages.removeChild(loadingMessage);
@@ -1128,7 +1123,7 @@ function toggleDarkMode() {
         </div>
         <div class="content">
           <div class="character-name">${getCharacterName(character)}</div>
-          <div class="message-text">${response}</div>
+          <div class="message-text">${data.response}</div>
         </div>
       `;
       debateMessages.appendChild(messageElement);
@@ -1136,7 +1131,7 @@ function toggleDarkMode() {
       // Add to debate history
       debateHistory.push({
         character: character,
-        response: response
+        response: data.response
       });
       
       // Scroll to the bottom
@@ -1151,7 +1146,7 @@ function toggleDarkMode() {
       errorElement.className = 'debate-message error';
       errorElement.innerHTML = `
         <div class="avatar">
-          <img src="https://placehold.co/100x100/${getCharacterColor(character)}/ffffff?text=${character.charAt(0).toUpperCase()}" alt="${getCharacterName(character)}">
+          <img src="${characterImages[character]}" alt="${getCharacterName(character)}">
         </div>
         <div class="content">
           <div class="character-name">${getCharacterName(character)}</div>
@@ -1160,7 +1155,6 @@ function toggleDarkMode() {
       `;
       debateMessages.appendChild(errorElement);
     }
-
     
     // Re-enable all character buttons
     document.querySelectorAll('.char-select-btn').forEach(btn => {
