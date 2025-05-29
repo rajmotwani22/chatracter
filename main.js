@@ -27,7 +27,7 @@ const characterImages = {
     walter: "assets/images/walter.jpg",
     tony: "assets/images/tony.jpg",
     tyrion: "assets/images/tyrion.jpg",
-    lucifer: "assets/images/lucifer.jpg",
+    lucifer: "assets/images/Lucifer.jpg",
     professor: "assets/images/professor.jpg"
   };
 // Character background images (for enhanced UI)
