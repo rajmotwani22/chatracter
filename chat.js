@@ -1,25 +1,29 @@
-
-
-// api/chat.js
-export default async function handler(req, res) {
-  // Set CORS headers to prevent any CORS issues
+// api/chat.js - CommonJS Version
+module.exports = async function handler(req, res) {
+  console.log('=== API FUNCTION CALLED ===');
+  console.log('Method:', req.method);
+  console.log('Body:', req.body);
+  console.log('Environment variables check:', !!process.env.OPENAI_API_KEY);
+  
+  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('Handling OPTIONS request');
     return res.status(200).end();
   }
   
   if (req.method !== 'POST') {
+    console.log('Wrong method, returning 405');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
     const { message, character, userName, mode, topic, debateHistory } = req.body;
-    
-    console.log('Request received:', { character, mode, userName });
+    console.log('Parsed request:', { message, character, userName, mode });
     
     // Character descriptions
     const characterDescriptions = {
@@ -31,13 +35,13 @@ export default async function handler(req, res) {
       professor: "You are The Professor from Money Heist (La Casa de Papel). You're meticulous, brilliant, and always several steps ahead of everyone else. You're the mastermind behind the greatest heists in history. You speak calmly and precisely, often explaining complex plans in simple terms. You're socially awkward but charismatic when needed. You believe in your cause and have a strong moral code despite being a criminal. You prefer to avoid violence and improvise when plans go awry."
     };
 
-    // Get API key from environment variable
+    // Check if API key exists
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      console.error('API key is missing from environment variables');
+      console.log('API key missing!');
       return res.status(500).json({ error: 'API key not configured' });
     }
-
+    
     console.log('API key found, making OpenAI request...');
 
     // Handle different modes
@@ -86,7 +90,7 @@ export default async function handler(req, res) {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('OpenAI API error:', errorData);
-        throw new Error(`OpenAI API error: ${response.status}`);
+        throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
       }
       
       const data = await response.json();
@@ -131,7 +135,7 @@ ${userName ? `The person you're talking to is named ${userName}. When appropriat
       if (!response.ok) {
         const errorData = await response.json();
         console.error('OpenAI API error:', errorData);
-        throw new Error(`OpenAI API error: ${response.status}`);
+        throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
       }
       
       const data = await response.json();
@@ -149,7 +153,7 @@ ${userName ? `The person you're talking to is named ${userName}. When appropriat
       details: error.message 
     });
   }
-}
+};
 
 // Helper function to get character display names
 function getCharacterName(character) {
