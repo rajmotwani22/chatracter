@@ -767,229 +767,122 @@ document.addEventListener('DOMContentLoaded', () => {
     } 
   }
 
-  function initBattleMode() {
-    // Clear previous battle content
-    battleContainer.innerHTML = '';
+  // Replace your initBattleMode function with this debug version
+
+function initBattleMode() {
+  console.log('=== INIT BATTLE MODE STARTED ===');
+  
+  // Check if battleContainer exists
+  if (!battleContainer) {
+    console.error('Battle container not found!');
+    return;
+  }
+  
+  console.log('Battle container found:', battleContainer);
+  
+  // Clear previous battle content
+  battleContainer.innerHTML = '';
+  console.log('Battle container cleared');
+  
+  // Create the debate interface
+  const debateInterface = document.createElement('div');
+  debateInterface.className = 'debate-interface';
+  debateInterface.innerHTML = `
+    <div class="debate-setup">
+      <h2>Interactive Character Debate</h2>
+      <div class="debate-topic-container">
+        <label for="debateTopic">Debate Topic:</label>
+        <input type="text" id="debateTopic" placeholder="What should the characters debate about?">
+        <button id="startDebateBtn" class="primary-button">Start Debate</button>
+      </div>
+    </div>
     
-    // Create the debate interface
-    const debateInterface = document.createElement('div');
-    debateInterface.className = 'debate-interface';
-    debateInterface.innerHTML = `
-      <div class="debate-setup">
-        <h2>Interactive Character Debate</h2>
-        <div class="debate-topic-container">
-          <label for="debateTopic">Debate Topic:</label>
-          <input type="text" id="debateTopic" placeholder="What should the characters debate about?">
-          <button id="startDebateBtn" class="primary-button">Start Debate</button>
-        </div>
+    <div class="debate-area" style="display: none;">
+      <div class="debate-header">
+        <h3 id="currentTopic"></h3>
+        <button id="resetDebateBtn" class="secondary-button">Reset Debate</button>
       </div>
       
-      <div class="debate-area" style="display: none;">
-        <div class="debate-header">
-          <h3 id="currentTopic"></h3>
-          <button id="resetDebateBtn" class="secondary-button">Reset Debate</button>
-        </div>
-        
-        <div class="debate-messages" id="debateMessages"></div>
-        
-        <div class="character-response-selector">
-          <p>Who should respond next?</p>
-          <div class="response-characters">
-            <div class="char-select-row">
-              <button class="char-select-btn" data-character="harvey">Harvey Specter</button>
-              <button class="char-select-btn" data-character="walter">Walter White</button>
-              <button class="char-select-btn" data-character="tony">Tony Stark</button>
-            </div>
-            <div class="char-select-row">
-              <button class="char-select-btn" data-character="tyrion">Tyrion Lannister</button>
-              <button class="char-select-btn" data-character="lucifer">Lucifer Morningstar</button>
-              <button class="char-select-btn" data-character="professor">The Professor</button>
-            </div>
+      <div class="debate-messages" id="debateMessages"></div>
+      
+      <div class="character-response-selector">
+        <p>Who should respond next?</p>
+        <div class="response-characters">
+          <div class="char-select-row">
+            <button class="char-select-btn" data-character="harvey">Harvey Specter</button>
+            <button class="char-select-btn" data-character="walter">Walter White</button>
+            <button class="char-select-btn" data-character="tony">Tony Stark</button>
+          </div>
+          <div class="char-select-row">
+            <button class="char-select-btn" data-character="tyrion">Tyrion Lannister</button>
+            <button class="char-select-btn" data-character="lucifer">Lucifer Morningstar</button>
+            <button class="char-select-btn" data-character="professor">The Professor</button>
           </div>
         </div>
       </div>
-    `;
+    </div>
+  `;
+  
+  battleContainer.appendChild(debateInterface);
+  console.log('Debate interface added to battle container');
+  
+  // Add event listeners with debugging
+  const startBtn = document.getElementById('startDebateBtn');
+  if (startBtn) {
+    console.log('Start debate button found:', startBtn);
+    startBtn.addEventListener('click', function(e) {
+      console.log('Start debate button clicked!', e);
+      startDebate();
+    });
+    console.log('Start debate event listener added');
     
-    battleContainer.appendChild(debateInterface);
+    // Test if button is clickable
+    startBtn.style.border = '2px solid red';
+    setTimeout(() => {
+      startBtn.style.border = '';
+    }, 2000);
+  } else {
+    console.error('Start debate button NOT found!');
+  }
+  
+  const resetBtn = document.getElementById('resetDebateBtn');
+  if (resetBtn) {
+    console.log('Reset debate button found:', resetBtn);
+    resetBtn.addEventListener('click', function(e) {
+      console.log('Reset debate button clicked!', e);
+      resetDebate();
+    });
+    console.log('Reset debate event listener added');
+  } else {
+    console.error('Reset debate button NOT found!');
+  }
+  
+  // Add event listeners to character buttons with debugging
+  const charButtons = document.querySelectorAll('.char-select-btn');
+  console.log('Character buttons found:', charButtons.length);
+  
+  charButtons.forEach((button, index) => {
+    console.log(`Adding listener to character button ${index}:`, button.textContent, button.dataset.character);
     
-    // Add event listeners
-    document.getElementById('startDebateBtn').addEventListener('click', startDebate);
-    document.getElementById('resetDebateBtn').addEventListener('click', resetDebate);
-    
-    // Add event listeners to character buttons
-    document.querySelectorAll('.char-select-btn').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const character = e.target.dataset.character;
-        getNextResponse(character);
-      });
+    button.addEventListener('click', function(e) {
+      console.log('Character button clicked!', button.dataset.character, e);
+      const character = button.dataset.character;
+      getNextResponse(character);
     });
     
-    // Add CSS styles
-    const style = document.createElement('style');
-    style.textContent = `
-      .debate-interface {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-      }
-      
-      .debate-topic-container {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        margin-top: 1rem;
-      }
-      
-      .debate-topic-container input {
-        padding: 0.75rem;
-        border: 1px solid var(--secondary);
-        border-radius: 8px;
-        font-size: 1rem;
-      }
-      
-      .primary-button, .secondary-button {
-        padding: 0.75rem 1rem;
-        border: none;
-        border-radius: 8px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      
-      .primary-button {
-        background-color: var(--accent);
-        color: white;
-      }
-      
-      .primary-button:hover {
-        background-color: #2a78f0;
-      }
-      
-      .secondary-button {
-        background-color: var(--secondary);
-        color: var(--text);
-      }
-      
-      .secondary-button:hover {
-        background-color: #d5d5d5;
-      }
-      
-      .debate-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--secondary);
-      }
-      
-      .debate-messages {
-        flex: 1;
-        overflow-y: auto;
-        padding: 1rem 0;
-        margin-bottom: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-      
-      .character-response-selector {
-        background-color: var(--character-panel);
-        padding: 1rem;
-        border-radius: 8px;
-      }
-      
-      .character-response-selector p {
-        margin-bottom: 0.75rem;
-        font-weight: 500;
-      }
-      
-      .response-characters {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-      
-      .char-select-row {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-      }
-      
-      .char-select-btn {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--secondary);
-        background-color: white;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      
-      .char-select-btn:hover {
-        background-color: var(--hover);
-      }
-      
-      .debate-message {
-        display: flex;
-        margin-bottom: 1rem;
-      }
-      
-      .debate-message .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        overflow: hidden;
-        margin-right: 0.75rem;
-        flex-shrink: 0;
-      }
-      
-      .debate-message .avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      
-      .debate-message .content {
-        flex: 1;
-        background-color: var(--chat-bubble);
-        padding: 0.75rem 1rem;
-        border-radius: 12px;
-        position: relative;
-      }
-      
-      .debate-message .content::before {
-        content: '';
-        position: absolute;
-        left: -6px;
-        top: 12px;
-        width: 12px;
-        height: 12px;
-        background-color: var(--chat-bubble);
-        transform: rotate(45deg);
-      }
-      
-      .debate-message .character-name {
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-      }
-      
-      .debate-message .message-text {
-        line-height: 1.4;
-      }
-      
-      @media (max-width: 768px) {
-        .char-select-row {
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-    
-    // Reset debate history
-    debateHistory = [];
-  }
+    // Visual indicator that button is interactive
+    button.style.border = '1px solid green';
+    setTimeout(() => {
+      button.style.border = '';
+    }, 3000);
+  });
+  
+  console.log('All event listeners added');
+  
+  // Reset debate history
+  debateHistory = [];
+  console.log('=== INIT BATTLE MODE COMPLETED ===');
+}
 
   async function startDebate() {
     const topic = document.getElementById('debateTopic').value.trim();

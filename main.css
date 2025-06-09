@@ -317,6 +317,134 @@
     padding: 0.4rem 0.8rem;
   }
 
+  /* Battle Mode CSS Fixes - Add these to your main.css */
+
+/* Ensure battle mode container is properly displayed and interactive */
+.battle-container {
+  display: block;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  width: 100%;
+  height: calc(100vh - 150px);
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+/* Ensure debate interface is clickable */
+.debate-interface {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Fix button clickability */
+.primary-button, 
+.secondary-button, 
+.char-select-btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 10;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Ensure start debate button is clickable */
+#startDebateBtn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 10;
+  position: relative;
+}
+
+/* Ensure reset debate button is clickable */
+#resetDebateBtn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 10;
+  position: relative;
+}
+
+/* Ensure character selection buttons are clickable */
+.char-select-btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 10;
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Fix any overlay issues */
+.debate-setup,
+.debate-area {
+  pointer-events: auto;
+  position: relative;
+  z-index: 5;
+}
+
+/* Ensure input fields are clickable */
+#debateTopic {
+  pointer-events: auto !important;
+  cursor: text !important;
+  z-index: 10;
+  position: relative;
+}
+
+/* Fix character response selector */
+.character-response-selector {
+  pointer-events: auto;
+  z-index: 5;
+  position: relative;
+}
+
+/* Ensure all interactive elements have proper cursor */
+button, 
+input[type="text"], 
+input[type="button"] {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+input[type="text"] {
+  cursor: text;
+}
+
+/* Debug styles - remove these after testing */
+/* 
+.char-select-btn {
+  border: 2px solid red !important;
+  background-color: yellow !important;
+}
+
+.primary-button {
+  border: 2px solid blue !important;
+  background-color: lightblue !important;
+}
+*/
+
+/* Responsive fixes for mobile */
+@media (max-width: 768px) {
+  .char-select-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem;
+    margin: 0.25rem;
+  }
+  
+  .primary-button,
+  .secondary-button {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+  }
+}
   /* Battle mode adjustments */
   .battle-container {
     height: auto;
