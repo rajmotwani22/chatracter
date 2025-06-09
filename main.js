@@ -22,6 +22,7 @@ const characterDescriptions = {
   lucifer: "You are Lucifer Morningstar from the TV show Lucifer. You're charming, hedonistic, and the literal devil who left Hell to run a nightclub in Los Angeles. You have the power to draw out people's deepest desires. You speak with a British accent, are obsessed with your own pleasure, and often make sexual innuendos. You're witty, self-centered, and have daddy issues with God. You're brutally honest and pride yourself on never lying.",
   professor: "You are The Professor from Money Heist (La Casa de Papel). You're meticulous, brilliant, and always several steps ahead of everyone else. You're the mastermind behind the greatest heists in history. You speak calmly and precisely, often explaining complex plans in simple terms. You're socially awkward but charismatic when needed. You believe in your cause and have a strong moral code despite being a criminal. You prefer to avoid violence and improvise when plans go awry."
 };
+
 const characterImages = {
     harvey: "assets/images/harvey.jpg",
     walter: "assets/images/walter.jpg",
@@ -30,6 +31,7 @@ const characterImages = {
     lucifer: "assets/images/Lucifer.jpg",
     professor: "assets/images/professor.jpg"
   };
+
 // Character background images (for enhanced UI)
 const characterBackgrounds = {
     harvey: "assets/images/harvey-bg.jpg",  // NYC skyline
@@ -39,6 +41,7 @@ const characterBackgrounds = {
     lucifer: "assets/images/lucifer-bg.jpg", // Nightclub/LA
     professor: "assets/images/professor-bg.jpg" // Bank/heist scene
   };
+
 // Additional character info for enhanced profiles
 const characterInfo = {
     harvey: {
@@ -280,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chatMode.addEventListener('click', () => switchMode('chat'));
     battleMode.addEventListener('click', () => switchMode('battle'));
-    //voiceMode.addEventListener('click', () => switchMode('voice'));
     settingsButton.addEventListener('click', openSettings);
     
     // Add Dark Mode Toggle to the features row
@@ -298,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selectCharacter('harvey');
 
     // Update character items with profile buttons
-  updateCharacterItems();
+    updateCharacterItems();
   }
 
   function selectCharacter(character) {
@@ -320,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update the theme
     updateTheme(character);
 
-      // Enhance text appearance
+    // Enhance text appearance
     enhanceTextAppearance();
   }
   
@@ -396,8 +398,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Enhance text appearance
     enhanceTextAppearance();
-
   }
+  
   function updateTheme(character) {
     // Set the theme attribute on the body element
     document.body.setAttribute('data-theme', character);
@@ -415,7 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Character-specific animations or effects
     switch (character) {
       case 'harvey':
-        // Subtle scale animation on header
         header.animate([
           { transform: 'scale(0.98)' },
           { transform: 'scale(1)' }
@@ -423,13 +424,10 @@ document.addEventListener('DOMContentLoaded', () => {
           duration: 400,
           easing: 'ease-out'
         });
-        
-        // Update app subtitle
         appSubtitle.textContent = "Master the art of closing";
         break;
         
       case 'walter':
-        // Chemistry-inspired header animation
         header.animate([
           { filter: 'brightness(0.95)' },
           { filter: 'brightness(1.05)' },
@@ -438,13 +436,10 @@ document.addEventListener('DOMContentLoaded', () => {
           duration: 600,
           easing: 'ease-in-out'
         });
-        
-        // Update app subtitle
         appSubtitle.textContent = "The one who knocks";
         break;
         
       case 'tony':
-        // Tech-inspired glow effect
         header.animate([
           { boxShadow: '0 0 15px rgba(244, 67, 54, 0.3)' },
           { boxShadow: '0 0 25px rgba(244, 67, 54, 0.5)' },
@@ -453,13 +448,10 @@ document.addEventListener('DOMContentLoaded', () => {
           duration: 800,
           easing: 'ease-in-out'
         });
-        
-        // Update app subtitle
         appSubtitle.textContent = "Genius. Billionaire. Philanthropist.";
         break;
         
       case 'tyrion':
-        // Subtle royal animation
         header.animate([
           { backgroundPosition: '0% 0%' },
           { backgroundPosition: '100% 0%' }
@@ -467,13 +459,10 @@ document.addEventListener('DOMContentLoaded', () => {
           duration: 800,
           easing: 'ease-in-out'
         });
-        
-        // Update app subtitle
         appSubtitle.textContent = "I drink and I know things";
         break;
         
       case 'lucifer':
-        // Devilish animation
         header.animate([
           { filter: 'contrast(1)' },
           { filter: 'contrast(1.1)' },
@@ -482,13 +471,10 @@ document.addEventListener('DOMContentLoaded', () => {
           duration: 700,
           easing: 'ease-in-out'
         });
-        
-        // Update app subtitle
         appSubtitle.textContent = "What do you truly desire?";
         break;
         
       case 'professor':
-        // Calculated precision animation
         header.animate([
           { backgroundSize: '400% 100%' },
           { backgroundSize: '100% 100%' }
@@ -496,18 +482,14 @@ document.addEventListener('DOMContentLoaded', () => {
           duration: 500,
           easing: 'ease-out'
         });
-        
-        // Update app subtitle
         appSubtitle.textContent = "Everything according to plan";
         break;
         
       default:
-        // Default subtitle
         appSubtitle.textContent = "Chat with your favorite characters";
     }
   }
   
-  // FIXED: This function no longer adds character names to user messages
   function enhanceTextAppearance() {
     // Get current character and mode
     const character = currentCharacter;
@@ -526,8 +508,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add a subtle border highlight
       message.style.borderLeft = `3px solid var(--accent)`;
     });
-    
-    // REMOVED: The code that automatically adds character names to user messages
     
     // Enhance the chat intro text with dynamic effects
     const chatIntro = document.querySelector('.chat-intro-text');
@@ -564,7 +544,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
-  
 
   function showIntro() {
     const introText = getIntroText(currentCharacter);
@@ -732,160 +711,189 @@ document.addEventListener('DOMContentLoaded', () => {
       return "I couldn't connect to my brain right now. Please check your internet connection and try again.";
     }
   }
-  
-  function getFallbackResponse(message) {
-    // This is a fallback when not using the actual API
-    const fallbackResponses = {
-      harvey: `Look ${userInfo.name ? userInfo.name : ''}, I don't have time for hypotheticals. If you want results, you come to me with something real. That's how this works.`,
-      walter: `I'm not sure I understand what you're asking. Chemistry is about precision, and your question lacks it. Perhaps you could be more specific?`,
-      tony: `Interesting question${userInfo.name ? ', ' + userInfo.name : ''}. I'd build an AI to figure that out for me while I'm out saving the world. Or having a drink. Probably both.`,
-      tyrion: `That's a curious question. I'd need more wine to properly answer it. Perhaps we could discuss this further over a flagon or three?`,
-      lucifer: `Oh darling${userInfo.name ? ' ' + userInfo.name : ''}, that's quite the question. Tell me, what do you truly desire from my answer? The truth might surprise you.`,
-      professor: `Interesting question. I would need to analyze all variables before providing a definitive answer. Everything must be calculated precisely.`
-    };
-    
-    return fallbackResponses[currentCharacter] || `I'm not sure how to respond to that${userInfo.name ? ', ' + userInfo.name : ''}.`;
-  }
 
+  // FIXED: Properly handle mode switching with debugging
   async function switchMode(mode) {
+    console.log('=== SWITCHING MODE ===');
+    console.log('Current mode:', currentMode);
+    console.log('New mode:', mode);
+    
     currentMode = mode;
     
     // Update UI
     chatMode.classList.remove('active');
     battleMode.classList.remove('active');
-    voiceMode.classList.remove('active');
     
     if (mode === 'chat') {
+      console.log('Activating chat mode');
       chatMode.classList.add('active');
       document.querySelector('.chat-container').style.display = 'flex';
-      battleContainer.style.display = 'none';
+      if (battleContainer) {
+        battleContainer.style.display = 'none';
+      }
     } else if (mode === 'battle') {
+      console.log('Activating battle mode');
       battleMode.classList.add('active');
       document.querySelector('.chat-container').style.display = 'none';
-      battleContainer.style.display = 'block';
-      initBattleMode();
-    } 
+      if (battleContainer) {
+        battleContainer.style.display = 'block';
+        console.log('Battle container display set to block');
+        
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          initBattleMode();
+        }, 100);
+      } else {
+        console.error('Battle container not found!');
+      }
+    }
+    console.log('=== MODE SWITCH COMPLETE ===');
   }
 
-  // Replace your initBattleMode function with this debug version
-
-function initBattleMode() {
-  console.log('=== INIT BATTLE MODE STARTED ===');
-  
-  // Check if battleContainer exists
-  if (!battleContainer) {
-    console.error('Battle container not found!');
-    return;
-  }
-  
-  console.log('Battle container found:', battleContainer);
-  
-  // Clear previous battle content
-  battleContainer.innerHTML = '';
-  console.log('Battle container cleared');
-  
-  // Create the debate interface
-  const debateInterface = document.createElement('div');
-  debateInterface.className = 'debate-interface';
-  debateInterface.innerHTML = `
-    <div class="debate-setup">
-      <h2>Interactive Character Debate</h2>
-      <div class="debate-topic-container">
-        <label for="debateTopic">Debate Topic:</label>
-        <input type="text" id="debateTopic" placeholder="What should the characters debate about?">
-        <button id="startDebateBtn" class="primary-button">Start Debate</button>
-      </div>
-    </div>
+  // FIXED: Complete battle mode initialization with extensive debugging
+  function initBattleMode() {
+    console.log('=== INIT BATTLE MODE STARTED ===');
     
-    <div class="debate-area" style="display: none;">
-      <div class="debate-header">
-        <h3 id="currentTopic"></h3>
-        <button id="resetDebateBtn" class="secondary-button">Reset Debate</button>
+    // Check if battleContainer exists
+    if (!battleContainer) {
+      console.error('Battle container not found in DOM!');
+      return;
+    }
+    
+    console.log('Battle container found:', battleContainer);
+    console.log('Battle container display style:', getComputedStyle(battleContainer).display);
+    
+    // Clear previous battle content
+    battleContainer.innerHTML = '';
+    console.log('Battle container cleared');
+    
+    // Create the debate interface with inline styles for debugging
+    const debateInterface = document.createElement('div');
+    debateInterface.className = 'debate-interface';
+    debateInterface.style.cssText = 'pointer-events: auto; position: relative; z-index: 10;';
+    
+    debateInterface.innerHTML = `
+      <div class="debate-setup" style="pointer-events: auto; position: relative; z-index: 10;">
+        <h2>Interactive Character Debate</h2>
+        <div class="debate-topic-container">
+          <label for="debateTopic">Debate Topic:</label>
+          <input type="text" id="debateTopic" placeholder="What should the characters debate about?" style="pointer-events: auto; z-index: 10; position: relative;">
+          <button id="startDebateBtn" class="primary-button" style="pointer-events: auto; cursor: pointer; z-index: 10; position: relative; background-color: red; color: white; padding: 10px;">Start Debate</button>
+        </div>
       </div>
       
-      <div class="debate-messages" id="debateMessages"></div>
-      
-      <div class="character-response-selector">
-        <p>Who should respond next?</p>
-        <div class="response-characters">
-          <div class="char-select-row">
-            <button class="char-select-btn" data-character="harvey">Harvey Specter</button>
-            <button class="char-select-btn" data-character="walter">Walter White</button>
-            <button class="char-select-btn" data-character="tony">Tony Stark</button>
-          </div>
-          <div class="char-select-row">
-            <button class="char-select-btn" data-character="tyrion">Tyrion Lannister</button>
-            <button class="char-select-btn" data-character="lucifer">Lucifer Morningstar</button>
-            <button class="char-select-btn" data-character="professor">The Professor</button>
+      <div class="debate-area" style="display: none; pointer-events: auto; position: relative; z-index: 10;">
+        <div class="debate-header">
+          <h3 id="currentTopic"></h3>
+          <button id="resetDebateBtn" class="secondary-button" style="pointer-events: auto; cursor: pointer; z-index: 10; position: relative;">Reset Debate</button>
+        </div>
+        
+        <div class="debate-messages" id="debateMessages"></div>
+        
+        <div class="character-response-selector" style="pointer-events: auto; position: relative; z-index: 10;">
+          <p>Who should respond next?</p>
+          <div class="response-characters">
+            <div class="char-select-row">
+              <button class="char-select-btn" data-character="harvey" style="pointer-events: auto; cursor: pointer; z-index: 10; position: relative; background-color: blue; color: white; margin: 5px; padding: 10px;">Harvey Specter</button>
+              <button class="char-select-btn" data-character="walter" style="pointer-events: auto; cursor: pointer; z-index: 10; position: relative; background-color: green; color: white; margin: 5px; padding: 10px;">Walter White</button>
+              <button class="char-select-btn" data-character="tony" style="pointer-events: auto; cursor: pointer; z-index: 10; position: relative; background-color: orange; color: white; margin: 5px; padding: 10px;">Tony Stark</button>
+            </div>
+            <div class="char-select-row">
+              <button class="char-select-btn" data-character="tyrion" style="pointer-events: auto; cursor: pointer; z-index: 10; position: relative; background-color: purple; color: white; margin: 5px; padding: 10px;">Tyrion Lannister</button>
+              <button class="char-select-btn" data-character="lucifer" style="pointer-events: auto; cursor: pointer; z-index: 10; position: relative; background-color: darkred; color: white; margin: 5px; padding: 10px;">Lucifer Morningstar</button>
+              <button class="char-select-btn" data-character="professor" style="pointer-events: auto; cursor: pointer; z-index: 10; position: relative; background-color: navy; color: white; margin: 5px; padding: 10px;">The Professor</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  `;
-  
-  battleContainer.appendChild(debateInterface);
-  console.log('Debate interface added to battle container');
-  
-  // Add event listeners with debugging
-  const startBtn = document.getElementById('startDebateBtn');
-  if (startBtn) {
-    console.log('Start debate button found:', startBtn);
-    startBtn.addEventListener('click', function(e) {
-      console.log('Start debate button clicked!', e);
-      startDebate();
-    });
-    console.log('Start debate event listener added');
+    `;
     
-    // Test if button is clickable
-    startBtn.style.border = '2px solid red';
+    battleContainer.appendChild(debateInterface);
+    console.log('Debate interface added to battle container');
+    
+    // Add event listeners with extensive debugging
+    const startBtn = document.getElementById('startDebateBtn');
+    if (startBtn) {
+      console.log('Start debate button found:', startBtn);
+      console.log('Start button computed style:', getComputedStyle(startBtn).pointerEvents);
+      
+      startBtn.addEventListener('click', function(e) {
+        console.log('START DEBATE BUTTON CLICKED!', e);
+        e.preventDefault();
+        e.stopPropagation();
+        startDebate();
+      });
+      
+      // Add additional event listeners for debugging
+      startBtn.addEventListener('mousedown', () => console.log('Start button mousedown'));
+      startBtn.addEventListener('mouseup', () => console.log('Start button mouseup'));
+      startBtn.addEventListener('mouseover', () => console.log('Start button mouseover'));
+      
+      console.log('Start debate event listener added');
+    } else {
+      console.error('Start debate button NOT found after adding to DOM!');
+    }
+    
+    const resetBtn = document.getElementById('resetDebateBtn');
+    if (resetBtn) {
+      console.log('Reset debate button found:', resetBtn);
+      resetBtn.addEventListener('click', function(e) {
+        console.log('RESET DEBATE BUTTON CLICKED!', e);
+        e.preventDefault();
+        e.stopPropagation();
+        resetDebate();
+      });
+      console.log('Reset debate event listener added');
+    }
+    
+    // Add event listeners to character buttons with extensive debugging
+    const charButtons = document.querySelectorAll('.char-select-btn');
+    console.log('Character buttons found:', charButtons.length);
+    
+    charButtons.forEach((button, index) => {
+      console.log(`Adding listener to character button ${index}:`, button.textContent, button.dataset.character);
+      console.log('Button computed style:', getComputedStyle(button).pointerEvents);
+      
+      button.addEventListener('click', function(e) {
+        console.log('CHARACTER BUTTON CLICKED!', button.dataset.character, e);
+        e.preventDefault();
+        e.stopPropagation();
+        const character = button.dataset.character;
+        getNextResponse(character);
+      });
+      
+      // Add additional event listeners for debugging
+      button.addEventListener('mousedown', () => console.log(`Char button ${button.dataset.character} mousedown`));
+      button.addEventListener('mouseup', () => console.log(`Char button ${button.dataset.character} mouseup`));
+      button.addEventListener('mouseover', () => console.log(`Char button ${button.dataset.character} mouseover`));
+    });
+    
+    console.log('All event listeners added');
+    
+    // Reset debate history
+    debateHistory = [];
+    console.log('=== INIT BATTLE MODE COMPLETED ===');
+    
+    // Test if elements are actually clickable
     setTimeout(() => {
-      startBtn.style.border = '';
-    }, 2000);
-  } else {
-    console.error('Start debate button NOT found!');
+      console.log('Testing button clickability...');
+      const testBtn = document.getElementById('startDebateBtn');
+      if (testBtn) {
+        console.log('Test button exists, checking if it responds to programmatic click');
+        // Don't actually click it, just test if it's accessible
+        console.log('Test button tag name:', testBtn.tagName);
+        console.log('Test button disabled:', testBtn.disabled);
+        console.log('Test button style display:', testBtn.style.display);
+      }
+    }, 500);
   }
-  
-  const resetBtn = document.getElementById('resetDebateBtn');
-  if (resetBtn) {
-    console.log('Reset debate button found:', resetBtn);
-    resetBtn.addEventListener('click', function(e) {
-      console.log('Reset debate button clicked!', e);
-      resetDebate();
-    });
-    console.log('Reset debate event listener added');
-  } else {
-    console.error('Reset debate button NOT found!');
-  }
-  
-  // Add event listeners to character buttons with debugging
-  const charButtons = document.querySelectorAll('.char-select-btn');
-  console.log('Character buttons found:', charButtons.length);
-  
-  charButtons.forEach((button, index) => {
-    console.log(`Adding listener to character button ${index}:`, button.textContent, button.dataset.character);
-    
-    button.addEventListener('click', function(e) {
-      console.log('Character button clicked!', button.dataset.character, e);
-      const character = button.dataset.character;
-      getNextResponse(character);
-    });
-    
-    // Visual indicator that button is interactive
-    button.style.border = '1px solid green';
-    setTimeout(() => {
-      button.style.border = '';
-    }, 3000);
-  });
-  
-  console.log('All event listeners added');
-  
-  // Reset debate history
-  debateHistory = [];
-  console.log('=== INIT BATTLE MODE COMPLETED ===');
-}
 
   async function startDebate() {
+    console.log('=== START DEBATE FUNCTION CALLED ===');
+    
     const topic = document.getElementById('debateTopic').value.trim();
+    console.log('Topic entered:', topic);
+    
     if (!topic) {
       alert('Please enter a debate topic');
       return;
@@ -906,15 +914,21 @@ function initBattleMode() {
     debateHistory = [];
     document.getElementById('debateMessages').innerHTML = '';
     
+    console.log('Starting debate with Harvey...');
+    
     // Let Harvey start the debate
     await getNextResponse('harvey', true);
     
     // Reset button state
     startBtn.textContent = originalText;
     startBtn.disabled = false;
+    
+    console.log('=== START DEBATE COMPLETED ===');
   }
 
   function resetDebate() {
+    console.log('=== RESET DEBATE FUNCTION CALLED ===');
+    
     // Hide debate area and show setup
     document.querySelector('.debate-area').style.display = 'none';
     document.querySelector('.debate-setup').style.display = 'block';
@@ -925,9 +939,15 @@ function initBattleMode() {
     // Reset debate history
     debateHistory = [];
     document.getElementById('debateMessages').innerHTML = '';
+    
+    console.log('=== RESET DEBATE COMPLETED ===');
   }
 
   async function getNextResponse(character, isFirst = false) {
+    console.log('=== GET NEXT RESPONSE ===');
+    console.log('Character:', character);
+    console.log('Is first:', isFirst);
+    
     // Disable all character buttons
     document.querySelectorAll('.char-select-btn').forEach(btn => {
       btn.disabled = true;
@@ -952,6 +972,8 @@ function initBattleMode() {
     debateMessages.scrollTop = debateMessages.scrollHeight;
     
     try {
+      console.log('Making API call for battle mode...');
+      
       // Call the serverless function for battle mode
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -967,6 +989,8 @@ function initBattleMode() {
         }),
       });
       
+      console.log('API response status:', response.status);
+      
       if (!response.ok) {
         const errorData = await response.json();
         console.error("API Error:", errorData);
@@ -974,6 +998,7 @@ function initBattleMode() {
       }
       
       const data = await response.json();
+      console.log('API response received:', data);
       
       // Remove loading message
       debateMessages.removeChild(loadingMessage);
@@ -997,6 +1022,8 @@ function initBattleMode() {
         character: character,
         response: data.response
       });
+      
+      console.log('Debate history updated:', debateHistory.length, 'entries');
       
       // Scroll to the bottom
       debateMessages.scrollTop = debateMessages.scrollHeight;
@@ -1024,6 +1051,8 @@ function initBattleMode() {
     document.querySelectorAll('.char-select-btn').forEach(btn => {
       btn.disabled = false;
     });
+    
+    console.log('=== GET NEXT RESPONSE COMPLETED ===');
   }
 
   function getCharacterName(character) {
@@ -1051,7 +1080,7 @@ function initBattleMode() {
   }
   
   function openSettings() {
-    // Create a modal for API key settings
+    // Create a modal for settings
     const modal = document.createElement('div');
     modal.className = 'settings-modal';
     modal.innerHTML = `
@@ -1098,110 +1127,6 @@ function initBattleMode() {
     document.getElementById('cancelSettings').addEventListener('click', () => {
       document.body.removeChild(modal);
     });
-  
-    // Add styles for the modal
-    const style = document.createElement('style');
-    style.textContent = `
-      .settings-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      }
-      
-      .settings-content {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 12px;
-        width: 450px;
-        max-width: 90%;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      }
-      
-      .settings-content h2 {
-        color: var(--accent);
-        margin-bottom: 1.5rem;
-        font-size: 1.5rem;
-      }
-      
-      .settings-form {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-      }
-      
-      .settings-form label {
-        font-weight: 500;
-        margin-bottom: 0.25rem;
-        display: block;
-      }
-      
-      .settings-form input {
-        padding: 0.75rem;
-        border: 1px solid var(--secondary);
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: all 0.2s ease;
-      }
-      
-      .settings-form input:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.1);
-        outline: none;
-      }
-      
-      .form-group {
-        display: flex;
-        flex-direction: column;
-      }
-      
-      .settings-info {
-        font-size: 0.85rem;
-        color: #666;
-        margin-top: 0.25rem;
-      }
-      
-      .settings-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.75rem;
-        margin-top: 1rem;
-      }
-      
-      .settings-actions button {
-        padding: 0.75rem 1.25rem;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s ease;
-      }
-      
-      .settings-actions button:first-child {
-        background-color: var(--accent);
-        color: white;
-      }
-      
-      .settings-actions button:first-child:hover {
-        background-color: #2a78f0;
-      }
-      
-      .settings-actions button:last-child {
-        background-color: var(--secondary);
-      }
-      
-      .settings-actions button:last-child:hover {
-        background-color: #d5d5d5;
-      }
-    `;
-    
-    document.head.appendChild(style);
   }
   
   function showCharacterProfile(character) {
@@ -1274,110 +1199,6 @@ function initBattleMode() {
         }, 300);
       }
     });
-  
-    // Add styles for the profile modal
-    const style = document.createElement('style');
-    style.textContent = `
-      .character-profile-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-      }
-      
-      .character-profile-content {
-        background-color: white;
-        border-radius: 12px;
-        overflow: hidden;
-        width: 500px;
-        max-width: 90%;
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        animation: zoomIn 0.3s ease;
-      }
-      
-      .profile-header {
-        height: 200px;
-        background-size: cover;
-        background-position: center;
-        position: relative;
-      }
-      
-      .profile-avatar {
-        position: absolute;
-        bottom: -50px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 4px solid white;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-      
-      .profile-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      
-      .profile-info {
-        padding: 60px 2rem 2rem;
-        text-align: center;
-        overflow-y: auto;
-      }
-      
-      .profile-info h2 {
-        color: var(--accent);
-        margin-bottom: 0.5rem;
-      }
-      
-      .profile-title {
-        color: #666;
-        font-size: 0.9rem;
-        margin-bottom: 1.5rem;
-      }
-      
-      .profile-quote {
-        margin: 1.5rem 0;
-        font-style: italic;
-        color: #444;
-      }
-      
-      .profile-description {
-        text-align: left;
-        line-height: 1.6;
-        color: #333;
-      }
-      
-      .close-profile-btn {
-        margin: 1rem auto;
-        padding: 0.75rem 1.5rem;
-        background-color: var(--accent);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s ease;
-      }
-      
-      .close-profile-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-    `;
-    
-    document.head.appendChild(style);
   }
   
   function getCharacterDescription(character) {
@@ -1393,7 +1214,6 @@ function initBattleMode() {
     return descriptions[character] || "No description available.";
   }
   
-  // Update your character item creation to add profile button
   function updateCharacterItems() {
     characterItems.forEach(item => {
       const character = item.dataset.character;
@@ -1411,20 +1231,4 @@ function initBattleMode() {
     });
   }
 
-  function loadApiKey() {
-    // Check if API key is stored
-    if (typeof config !== 'undefined' && config.OPENAI_API_KEY) {
-      localStorage.setItem('openaiApiKey', config.OPENAI_API_KEY);
-      console.log("API key loaded from config");
-      return true;
-    }
-    
-    const storedKey = localStorage.getItem('openaiApiKey');
-    if (storedKey) {
-      return true;
-    }
-    
-    console.warn("No API key found in config or localStorage");
-    return false;
-  }
 });
