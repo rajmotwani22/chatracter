@@ -27,7 +27,7 @@ const characterImages = {
     walter: "assets/images/walter.jpg",
     tony: "assets/images/tony.jpg",
     tyrion: "assets/images/tyrion.jpg",
-    lucifer: "assets/images/Lucifer.jpg",
+    lucifer: "assets/images/lucifer.jpg",
     professor: "assets/images/professor.jpg"
   };
 // Character background images (for enhanced UI)
@@ -524,7 +524,7 @@ function toggleDarkMode() {
       // Add a subtle border highlight
       message.style.borderLeft = `3px solid var(--accent)`;
     });
-    
+    /*
     // Add character name to user messages when appropriate
     const userMessages = document.querySelectorAll('.message.user .message-content');
     userMessages.forEach(message => {
@@ -545,7 +545,7 @@ function toggleDarkMode() {
         message.dataset.processed = 'true';
       }
     });
-    
+    */
     // Enhance the chat intro text with dynamic effects
     const chatIntro = document.querySelector('.chat-intro-text');
     if (chatIntro) {
@@ -557,30 +557,40 @@ function toggleDarkMode() {
       }
       
       // Add gradient text effect for character name in the intro
-      const characterName = getCharacterName(character);
-      if (chatIntro.textContent.includes(characterName)) {
-        const newText = chatIntro.textContent.replace(
-          characterName, 
-          `<span class="character-highlight">${characterName}</span>`
-        );
-        chatIntro.innerHTML = newText;
-        
-        // Add styles for the highlighted character name
-        const style = document.createElement('style');
-        style.textContent = `
-          .character-highlight {
-            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 700;
-            padding: 0 2px;
-          }
-        `;
-        document.head.appendChild(style);
-      }
+      const chatIntro = document.querySelector('.chat-intro-text');
+  if (chatIntro) {
+    // Add text shadow based on theme
+    if (isDarkMode) {
+      chatIntro.style.textShadow = `0 2px 10px rgba(var(--accent-rgb), 0.4)`;
+    } else {
+      chatIntro.style.textShadow = `0 1px 5px rgba(var(--accent-rgb), 0.2)`;
+    }
+    
+    // Add gradient text effect for character name in the intro
+    const characterName = getCharacterName(character);
+    if (chatIntro.textContent.includes(characterName)) {
+      const newText = chatIntro.textContent.replace(
+        characterName, 
+        `<span class="character-highlight">${characterName}</span>`
+      );
+      chatIntro.innerHTML = newText;
+      
+      // Add styles for the highlighted character name
+      const style = document.createElement('style');
+      style.textContent = `
+        .character-highlight {
+          background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          font-weight: 700;
+          padding: 0 2px;
+        }
+      `;
+      document.head.appendChild(style);
     }
   }
+}
   
 
   function showIntro() {
@@ -664,39 +674,34 @@ function toggleDarkMode() {
   function addMessage(text, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}`;
-    // Add special styling for character messages in dark mode
-  if (sender === 'character' && document.documentElement.classList.contains('dark-mode')) {
-    messageDiv.innerHTML = `
-      <div class="message-content" style="background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(0,0,0,0.3) 100%); border-left: 3px solid var(--accent);">
-        ${text}
-      </div>
-    `;
-  } else if (sender === 'user') {
-    // For user messages, prepend character name if not present
-    const characterName = getCharacterName(currentCharacter);
-    if (!text.startsWith(characterName) && !text.includes(`${characterName},`)) {
+    
+    if (sender === 'character' && document.documentElement.classList.contains('dark-mode')) {
+      messageDiv.innerHTML = `
+        <div class="message-content" style="background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(0,0,0,0.3) 100%); border-left: 3px solid var(--accent);">
+          ${text}
+        </div>
+      `;
+    } else if (sender === 'user') {
+      // REMOVED: Character name prefixing - just show the user's message as-is
       messageDiv.innerHTML = `
         <div class="message-content" data-processed="true">
-          <span class="message-recipient" style="color: var(--text-character-primary); font-weight: 500;">${characterName}, </span>${text}
+          ${text}
         </div>
       `;
     } else {
-      messageDiv.innerHTML = `<div class="message-content" data-processed="true">${text}</div>`;
+      messageDiv.innerHTML = `<div class="message-content">${text}</div>`;
     }
-  } else {
-    messageDiv.innerHTML = `<div class="message-content">${text}</div>`;
-  }
     
     // Remove intro if it exists
     const intro = document.querySelector('.chat-intro');
     if (intro) {
       chatMessages.removeChild(intro);
     }
-
-    
+  
     chatMessages.appendChild(messageDiv);
     scrollToBottom();
   }
+
 
   function showTypingIndicator() {
     const indicator = document.createElement('div');
