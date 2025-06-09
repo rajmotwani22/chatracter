@@ -238,8 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return true;
   }
-  // Add this function to your JavaScript to enhance the character header
-function enhanceCharacterHeader() {
+  
+  function enhanceCharacterHeader() {
     // Find all character header elements
     const characterHeaders = document.querySelectorAll('.character-header');
     
@@ -323,8 +323,8 @@ function enhanceCharacterHeader() {
       // Enhance text appearance
     enhanceTextAppearance();
   }
-  // Add this new function to create the dark mode toggle
-function addDarkModeToggle() {
+  
+  function addDarkModeToggle() {
     // Create the dark mode toggle button
     const darkModeToggle = document.createElement('button');
     darkModeToggle.className = 'feature-button dark-mode-toggle';
@@ -366,8 +366,8 @@ function addDarkModeToggle() {
     `;
     document.head.appendChild(style);
   }
-  // Add this new function to toggle dark mode
-function toggleDarkMode() {
+  
+  function toggleDarkMode() {
     // Toggle dark mode state
     themeSettings.darkMode = !themeSettings.darkMode;
     
@@ -506,6 +506,8 @@ function toggleDarkMode() {
         appSubtitle.textContent = "Chat with your favorite characters";
     }
   }
+  
+  // FIXED: This function no longer adds character names to user messages
   function enhanceTextAppearance() {
     // Get current character and mode
     const character = currentCharacter;
@@ -525,26 +527,7 @@ function toggleDarkMode() {
       message.style.borderLeft = `3px solid var(--accent)`;
     });
     
-    // Add character name to user messages when appropriate
-    const userMessages = document.querySelectorAll('.message.user .message-content');
-    userMessages.forEach(message => {
-      // Only process messages that don't already have a character reference
-      if (!message.dataset.processed) {
-        // Get character name based on current character
-        const characterName = getCharacterName(character);
-        
-        // Parse the message text
-        let messageText = message.textContent;
-        
-        // If the message doesn't start with the character's name, add it
-        if (!messageText.startsWith(characterName) && !messageText.includes(`${characterName},`)) {
-          message.innerHTML = `<span class="message-recipient" style="color: var(--text-character-primary); font-weight: 500;">${characterName}, </span>${messageText}`;
-        }
-        
-        // Mark as processed
-        message.dataset.processed = 'true';
-      }
-    });
+    // REMOVED: The code that automatically adds character names to user messages
     
     // Enhance the chat intro text with dynamic effects
     const chatIntro = document.querySelector('.chat-intro-text');
@@ -661,31 +644,27 @@ function toggleDarkMode() {
     }
   }
 
+  // FIXED: This function no longer adds character name prefixes to user messages
   function addMessage(text, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}`;
-    // Add special styling for character messages in dark mode
-  if (sender === 'character' && document.documentElement.classList.contains('dark-mode')) {
-    messageDiv.innerHTML = `
-      <div class="message-content" style="background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(0,0,0,0.3) 100%); border-left: 3px solid var(--accent);">
-        ${text}
-      </div>
-    `;
-  } else if (sender === 'user') {
-    // For user messages, prepend character name if not present
-    const characterName = getCharacterName(currentCharacter);
-    if (!text.startsWith(characterName) && !text.includes(`${characterName},`)) {
+    
+    if (sender === 'character' && document.documentElement.classList.contains('dark-mode')) {
+      messageDiv.innerHTML = `
+        <div class="message-content" style="background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(0,0,0,0.3) 100%); border-left: 3px solid var(--accent);">
+          ${text}
+        </div>
+      `;
+    } else if (sender === 'user') {
+      // REMOVED: Character name prefixing - just show the user's message as-is
       messageDiv.innerHTML = `
         <div class="message-content" data-processed="true">
-          <span class="message-recipient" style="color: var(--text-character-primary); font-weight: 500;">${characterName}, </span>${text}
+          ${text}
         </div>
       `;
     } else {
-      messageDiv.innerHTML = `<div class="message-content" data-processed="true">${text}</div>`;
+      messageDiv.innerHTML = `<div class="message-content">${text}</div>`;
     }
-  } else {
-    messageDiv.innerHTML = `<div class="message-content">${text}</div>`;
-  }
     
     // Remove intro if it exists
     const intro = document.querySelector('.chat-intro');
@@ -693,7 +672,6 @@ function toggleDarkMode() {
       chatMessages.removeChild(intro);
     }
 
-    
     chatMessages.appendChild(messageDiv);
     scrollToBottom();
   }
@@ -784,16 +762,9 @@ function toggleDarkMode() {
     } else if (mode === 'battle') {
       battleMode.classList.add('active');
       document.querySelector('.chat-container').style.display = 'none';
-      battleContainer.style.display = 'block'; // Changed from 'grid' to 'block'
+      battleContainer.style.display = 'block';
       initBattleMode();
     } 
-    /*else if (mode === 'voice') {
-      voiceMode.classList.add('active');
-      alert('Voice mode is coming soon!');
-      // Reset to chat mode for now
-      switchMode('chat');
-    }
-    */
   }
 
   function initBattleMode() {
@@ -1087,34 +1058,29 @@ function toggleDarkMode() {
     debateMessages.appendChild(loadingMessage);
     debateMessages.scrollTop = debateMessages.scrollHeight;
     
-    // Prepare the prompt based on debate history
-    let prompt;
-    
-    if (isFirst) {
-      prompt = `The topic is: "${topic}". Give your opinion on this topic. Be concise.`;
-    } else {
-      // Build context from debate history
-      let context = `The topic is: "${topic}". Here's the conversation so far:\n\n`;
-      
-      debateHistory.forEach(entry => {
-        context += `${getCharacterName(entry.character)}: ${entry.response}\n\n`;
+    try {
+      // Call the serverless function for battle mode
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mode: 'battle',
+          character: character,
+          topic: topic,
+          debateHistory: debateHistory,
+          userName: userInfo.name || ''
+        }),
       });
       
-      // Add instructions
-      context += `Now respond as ${getCharacterName(character)}. Address the previous points made by the other characters. Be concise and stay in character.`;
-      prompt = context;
-    }
-    
-    try {
-      // Set the currentCharacter to the selected character
-      const tempCurrent = currentCharacter;
-      currentCharacter = character;
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("API Error:", errorData);
+        throw new Error(errorData.error || 'Failed to get response');
+      }
       
-      // Get response from API
-      const response = await getOpenAIResponse(prompt);
-      
-      // Restore the current character
-      currentCharacter = tempCurrent;
+      const data = await response.json();
       
       // Remove loading message
       debateMessages.removeChild(loadingMessage);
@@ -1128,7 +1094,7 @@ function toggleDarkMode() {
         </div>
         <div class="content">
           <div class="character-name">${getCharacterName(character)}</div>
-          <div class="message-text">${response}</div>
+          <div class="message-text">${data.response}</div>
         </div>
       `;
       debateMessages.appendChild(messageElement);
@@ -1136,7 +1102,7 @@ function toggleDarkMode() {
       // Add to debate history
       debateHistory.push({
         character: character,
-        response: response
+        response: data.response
       });
       
       // Scroll to the bottom
@@ -1151,7 +1117,7 @@ function toggleDarkMode() {
       errorElement.className = 'debate-message error';
       errorElement.innerHTML = `
         <div class="avatar">
-          <img src="https://placehold.co/100x100/${getCharacterColor(character)}/ffffff?text=${character.charAt(0).toUpperCase()}" alt="${getCharacterName(character)}">
+          <img src="${characterImages[character]}" alt="${getCharacterName(character)}">
         </div>
         <div class="content">
           <div class="character-name">${getCharacterName(character)}</div>
@@ -1160,7 +1126,6 @@ function toggleDarkMode() {
       `;
       debateMessages.appendChild(errorElement);
     }
-
     
     // Re-enable all character buttons
     document.querySelectorAll('.char-select-btn').forEach(btn => {
@@ -1180,8 +1145,7 @@ function toggleDarkMode() {
     return names[character] || character;
   }
 
-// Update the getCharacterColor function to use a fallback if needed
-function getCharacterColor(character) {
+  function getCharacterColor(character) {
     const colors = {
       harvey: "1a73e8",
       walter: "388e3c",
@@ -1192,38 +1156,6 @@ function getCharacterColor(character) {
     };
     return colors[character] || "666666";
   }
-  // Update the create battle card function to use real images
-function createDebateCard(data, question) {
-    const { character, initialResponse, debateResponse, respondingTo } = data;
-    
-    const respondingToName = getCharacterName(respondingTo);
-    
-    const card = document.createElement('div');
-    card.className = 'battle-card';
-    card.innerHTML = `
-      <div class="battle-header">
-        <div class="battle-avatar">
-          <img src="${characterImages[character]}" alt="${getCharacterName(character)}">
-        </div>
-        <div class="battle-name">${getCharacterName(character)}</div>
-      </div>
-      <div class="battle-response"><strong>Initial take:</strong> ${initialResponse}</div>
-      <div class="battle-debate">
-        <div class="debate-target">Responding to ${respondingToName}:</div>
-        <div class="debate-response">${debateResponse}</div>
-      </div>
-      <div class="battle-actions">
-        <button class="vote-button" data-character="${character}">Vote (0)</button>
-        <button class="share-button">Share</button>
-      </div>
-    `;
-    
-    battleContainer.appendChild(card);
-    
-    // Add event listener to vote button
-    card.querySelector('.vote-button').addEventListener('click', handleVote);
-    card.querySelector('.share-button').addEventListener('click', () => shareResponse(character, question, initialResponse + "\n\nResponding to " + respondingToName + ": " + debateResponse));
-  }
   
   function openSettings() {
     // Create a modal for API key settings
@@ -1233,14 +1165,14 @@ function createDebateCard(data, question) {
       <div class="settings-content">
         <h2>Settings</h2>
         <div class="settings-form">
-          <label for="apiKey">OpenAI API Key:</label>
-          <input type="password" id="apiKey" placeholder="Enter your OpenAI API key" value="${localStorage.getItem('openaiApiKey') || ''}">
-          <p class="settings-help">Your API key is stored locally in your browser and never sent to our servers.</p>
-          
           <div class="form-group">
             <label for="updateName">Your Name:</label>
             <input type="text" id="updateName" placeholder="Update your name" value="${userInfo.name || ''}">
           </div>
+          
+          <p class="settings-info">
+            This app uses OpenAI's API to generate character responses. Your conversations are not stored on our servers.
+          </p>
           
           <div class="settings-actions">
             <button id="saveSettings">Save</button>
@@ -1254,17 +1186,6 @@ function createDebateCard(data, question) {
     
     // Add event listeners
     document.getElementById('saveSettings').addEventListener('click', () => {
-      const apiKey = document.getElementById('apiKey').value.trim();
-      if (apiKey) {
-        localStorage.setItem('openaiApiKey', apiKey);
-        
-        // Remove notification if it exists
-        const notification = document.querySelector('.api-key-notification');
-        if (notification) {
-          document.body.removeChild(notification);
-        }
-      }
-      
       // Update user name if changed
       const newName = document.getElementById('updateName').value.trim();
       if (newName && newName !== userInfo.name) {
@@ -1347,7 +1268,7 @@ function createDebateCard(data, question) {
         flex-direction: column;
       }
       
-      .settings-help {
+      .settings-info {
         font-size: 0.85rem;
         color: #666;
         margin-top: 0.25rem;
@@ -1385,30 +1306,12 @@ function createDebateCard(data, question) {
       .settings-actions button:last-child:hover {
         background-color: #d5d5d5;
       }
-      
-      .battle-loading {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 2rem;
-        font-size: 1.2rem;
-        color: #666;
-      }
-      
-      .battle-error {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 2rem;
-        font-size: 1.2rem;
-        color: #ff0000;
-      }
     `;
     
     document.head.appendChild(style);
   }
   
-  // Create a new function to show character profile
-// Replace your current showCharacterProfile function with this updated version
-function showCharacterProfile(character) {
+  function showCharacterProfile(character) {
     // Create a modal for the character profile
     const modal = document.createElement('div');
     modal.className = 'character-profile-modal';
@@ -1616,36 +1519,19 @@ function showCharacterProfile(character) {
   }
 
   function loadApiKey() {
-    // In a real environment setup, you would use something like:
-    // const apiKey = process.env.OPENAI_API_KEY;
-    
-    // For development with pure HTML/JS, you can use a config.js file:
-    // 1. Create a config.js file with your API key:
-    //    const config = { 
-    //      OPENAI_API_KEY: "your-api-key-here"
-    //    };
-    
-    // 2. Include it in your HTML before harvey.js:
-    //    <script src="config.js"></script>
-    //    <script src="harvey.js"></script>
-    
-    // 3. Then access it here:
+    // Check if API key is stored
     if (typeof config !== 'undefined' && config.OPENAI_API_KEY) {
-      // Store in localStorage for the session
       localStorage.setItem('openaiApiKey', config.OPENAI_API_KEY);
       console.log("API key loaded from config");
       return true;
     }
     
-    // Fallback to checking localStorage if config doesn't exist
     const storedKey = localStorage.getItem('openaiApiKey');
     if (storedKey) {
       return true;
     }
     
-    // If no key is found anywhere, still show settings
     console.warn("No API key found in config or localStorage");
-    openSettings();
     return false;
   }
 });
