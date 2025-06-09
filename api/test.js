@@ -1,7 +1,4 @@
-// api/test.js - Simple test function
-module.exports = async function handler(req, res) {
-  console.log('Test function called!');
-  
+export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -10,12 +7,9 @@ module.exports = async function handler(req, res) {
     return res.status(200).end();
   }
   
-  const hasApiKey = !!process.env.OPENAI_API_KEY;
-  
   return res.status(200).json({ 
-    message: 'Test function works!',
-    method: req.method,
-    hasApiKey: hasApiKey,
-    timestamp: new Date().toISOString()
+    message: 'Test API is working!',
+    timestamp: new Date().toISOString(),
+    method: req.method
   });
-};
+}
