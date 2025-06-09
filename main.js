@@ -524,7 +524,7 @@ function toggleDarkMode() {
       // Add a subtle border highlight
       message.style.borderLeft = `3px solid var(--accent)`;
     });
-    /*
+    
     // Add character name to user messages when appropriate
     const userMessages = document.querySelectorAll('.message.user .message-content');
     userMessages.forEach(message => {
@@ -545,7 +545,7 @@ function toggleDarkMode() {
         message.dataset.processed = 'true';
       }
     });
-    */
+    
     // Enhance the chat intro text with dynamic effects
     const chatIntro = document.querySelector('.chat-intro-text');
     if (chatIntro) {
@@ -557,40 +557,30 @@ function toggleDarkMode() {
       }
       
       // Add gradient text effect for character name in the intro
-      const chatIntro = document.querySelector('.chat-intro-text');
-  if (chatIntro) {
-    // Add text shadow based on theme
-    if (isDarkMode) {
-      chatIntro.style.textShadow = `0 2px 10px rgba(var(--accent-rgb), 0.4)`;
-    } else {
-      chatIntro.style.textShadow = `0 1px 5px rgba(var(--accent-rgb), 0.2)`;
-    }
-    
-    // Add gradient text effect for character name in the intro
-    const characterName = getCharacterName(character);
-    if (chatIntro.textContent.includes(characterName)) {
-      const newText = chatIntro.textContent.replace(
-        characterName, 
-        `<span class="character-highlight">${characterName}</span>`
-      );
-      chatIntro.innerHTML = newText;
-      
-      // Add styles for the highlighted character name
-      const style = document.createElement('style');
-      style.textContent = `
-        .character-highlight {
-          background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          font-weight: 700;
-          padding: 0 2px;
-        }
-      `;
-      document.head.appendChild(style);
+      const characterName = getCharacterName(character);
+      if (chatIntro.textContent.includes(characterName)) {
+        const newText = chatIntro.textContent.replace(
+          characterName, 
+          `<span class="character-highlight">${characterName}</span>`
+        );
+        chatIntro.innerHTML = newText;
+        
+        // Add styles for the highlighted character name
+        const style = document.createElement('style');
+        style.textContent = `
+          .character-highlight {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+            padding: 0 2px;
+          }
+        `;
+        document.head.appendChild(style);
+      }
     }
   }
-}
   
 
   function showIntro() {
@@ -674,34 +664,39 @@ function toggleDarkMode() {
   function addMessage(text, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}`;
-    
-    if (sender === 'character' && document.documentElement.classList.contains('dark-mode')) {
-      messageDiv.innerHTML = `
-        <div class="message-content" style="background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(0,0,0,0.3) 100%); border-left: 3px solid var(--accent);">
-          ${text}
-        </div>
-      `;
-    } else if (sender === 'user') {
-      // REMOVED: Character name prefixing - just show the user's message as-is
+    // Add special styling for character messages in dark mode
+  if (sender === 'character' && document.documentElement.classList.contains('dark-mode')) {
+    messageDiv.innerHTML = `
+      <div class="message-content" style="background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15) 0%, rgba(0,0,0,0.3) 100%); border-left: 3px solid var(--accent);">
+        ${text}
+      </div>
+    `;
+  } else if (sender === 'user') {
+    // For user messages, prepend character name if not present
+    const characterName = getCharacterName(currentCharacter);
+    if (!text.startsWith(characterName) && !text.includes(`${characterName},`)) {
       messageDiv.innerHTML = `
         <div class="message-content" data-processed="true">
-          ${text}
+          <span class="message-recipient" style="color: var(--text-character-primary); font-weight: 500;">${characterName}, </span>${text}
         </div>
       `;
     } else {
-      messageDiv.innerHTML = `<div class="message-content">${text}</div>`;
+      messageDiv.innerHTML = `<div class="message-content" data-processed="true">${text}</div>`;
     }
+  } else {
+    messageDiv.innerHTML = `<div class="message-content">${text}</div>`;
+  }
     
     // Remove intro if it exists
     const intro = document.querySelector('.chat-intro');
     if (intro) {
       chatMessages.removeChild(intro);
     }
-  
+
+    
     chatMessages.appendChild(messageDiv);
     scrollToBottom();
   }
-
 
   function showTypingIndicator() {
     const indicator = document.createElement('div');
@@ -1092,29 +1087,34 @@ function toggleDarkMode() {
     debateMessages.appendChild(loadingMessage);
     debateMessages.scrollTop = debateMessages.scrollHeight;
     
-    try {
-      // Call the serverless function instead of OpenAI directly
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          mode: 'battle',
-          character: character,
-          topic: topic,
-          debateHistory: debateHistory,
-          userName: userInfo.name || ''
-        }),
+    // Prepare the prompt based on debate history
+    let prompt;
+    
+    if (isFirst) {
+      prompt = `The topic is: "${topic}". Give your opinion on this topic. Be concise.`;
+    } else {
+      // Build context from debate history
+      let context = `The topic is: "${topic}". Here's the conversation so far:\n\n`;
+      
+      debateHistory.forEach(entry => {
+        context += `${getCharacterName(entry.character)}: ${entry.response}\n\n`;
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("API Error:", errorData);
-        throw new Error(errorData.error || 'Failed to get response');
-      }
+      // Add instructions
+      context += `Now respond as ${getCharacterName(character)}. Address the previous points made by the other characters. Be concise and stay in character.`;
+      prompt = context;
+    }
+    
+    try {
+      // Set the currentCharacter to the selected character
+      const tempCurrent = currentCharacter;
+      currentCharacter = character;
       
-      const data = await response.json();
+      // Get response from API
+      const response = await getOpenAIResponse(prompt);
+      
+      // Restore the current character
+      currentCharacter = tempCurrent;
       
       // Remove loading message
       debateMessages.removeChild(loadingMessage);
@@ -1128,7 +1128,7 @@ function toggleDarkMode() {
         </div>
         <div class="content">
           <div class="character-name">${getCharacterName(character)}</div>
-          <div class="message-text">${data.response}</div>
+          <div class="message-text">${response}</div>
         </div>
       `;
       debateMessages.appendChild(messageElement);
@@ -1136,7 +1136,7 @@ function toggleDarkMode() {
       // Add to debate history
       debateHistory.push({
         character: character,
-        response: data.response
+        response: response
       });
       
       // Scroll to the bottom
@@ -1151,7 +1151,7 @@ function toggleDarkMode() {
       errorElement.className = 'debate-message error';
       errorElement.innerHTML = `
         <div class="avatar">
-          <img src="${characterImages[character]}" alt="${getCharacterName(character)}">
+          <img src="https://placehold.co/100x100/${getCharacterColor(character)}/ffffff?text=${character.charAt(0).toUpperCase()}" alt="${getCharacterName(character)}">
         </div>
         <div class="content">
           <div class="character-name">${getCharacterName(character)}</div>
@@ -1160,6 +1160,7 @@ function toggleDarkMode() {
       `;
       debateMessages.appendChild(errorElement);
     }
+
     
     // Re-enable all character buttons
     document.querySelectorAll('.char-select-btn').forEach(btn => {
