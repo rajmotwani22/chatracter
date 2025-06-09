@@ -1,4 +1,3 @@
-// api/chat.js
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,12 +14,43 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, character, userName, mode } = req.body;
+    const { message, character, userName, mode, topic, debateHistory } = req.body;
     
+    // Character descriptions
+    const characterDescriptions = {
+      harvey: "You are Harvey Specter from the TV show Suits. You're confident, witty, and the best closer in New York City. Keep responses under 100 words.",
+      walter: "You are Walter White from Breaking Bad. You're calculating, prideful, and extremely intelligent. Keep responses under 100 words.",
+      tony: "You are Tony Stark from the Marvel films. You're a genius, billionaire, playboy, philanthropist. Keep responses under 100 words.",
+      tyrion: "You are Tyrion Lannister from Game of Thrones. You're witty, cynical, and highly intelligent. Keep responses under 100 words.",
+      lucifer: "You are Lucifer Morningstar from the TV show Lucifer. You're charming, hedonistic, and the literal devil. Keep responses under 100 words.",
+      professor: "You are The Professor from Money Heist. You're meticulous, brilliant, and always several steps ahead. Keep responses under 100 words."
+    };
+
     // Check for API key
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return res.status(500).json({ error: 'API key not configured' });
+    }
+
+    let promptContent;
+    
+    // Handle battle mode
+    if (mode === 'battle') {
+      let context = `Topic: "${topic}"\n\n`;
+      
+      if (debateHistory && debateHistory.length > 0) {
+        debateHistory.forEach(entry => {
+          context += `${entry.character}: ${entry.response}\n\n`;
+        });
+        context += `Now respond as ${character}. Address the previous points. Stay in character.`;
+      } else {
+        context = `Topic: "${topic}". Give your opinion as ${character}.`;
+      }
+      
+      promptContent = context;
+    } else {
+      // Normal chat mode
+      promptContent = message;
     }
 
     // Make OpenAI API call
@@ -35,11 +65,11 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `You are ${character}. Keep responses under 100 words.`
+            content: characterDescriptions[character] + (userName ? ` The user's name is ${userName}.` : '')
           },
           {
             role: "user",
-            content: message
+            content: promptContent
           }
         ],
         max_tokens: 150,
