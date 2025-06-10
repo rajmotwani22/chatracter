@@ -311,21 +311,30 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(style);
   }
-// Add a new function to show admin stats (add this to your main.js)
+// Add these functions to your main.js file
+// Add them inside the DOMContentLoaded event listener
+
+// Admin Panel Functions - Add these to your main.js
+
 function showAdminStats() {
-  // Only show if you're the admin (you can check by name or add a secret)
-  if (userInfo.name !== 'YOUR_ADMIN_NAME_HERE') {
-    return;
-  }
+  console.log('Opening admin panel...');
   
   // Create admin panel
   const adminPanel = document.createElement('div');
   adminPanel.className = 'admin-panel';
   adminPanel.innerHTML = `
     <div class="admin-content">
-      <h2>📊 App Statistics</h2>
-      <div id="statsContainer">Loading...</div>
-      <button id="closeAdminBtn">Close</button>
+      <div class="admin-header">
+        <h2>📊 Chatracter App Statistics</h2>
+        <button id="closeAdminBtn" class="close-btn">×</button>
+      </div>
+      <div id="statsContainer" class="stats-container">
+        <div class="loading">Loading statistics...</div>
+      </div>
+      <div class="admin-actions">
+        <button id="refreshStatsBtn" class="action-btn">🔄 Refresh</button>
+        <button id="exportDataBtn" class="action-btn">📁 Export Data</button>
+      </div>
     </div>
   `;
   
@@ -334,124 +343,382 @@ function showAdminStats() {
   // Load stats
   loadAdminStats();
   
-  // Close button
+  // Event listeners
+  document.getElementById('refreshStatsBtn').addEventListener('click', () => {
+    document.getElementById('statsContainer').innerHTML = '<div class="loading">Refreshing...</div>';
+    loadAdminStats();
+  });
+  
+  document.getElementById('exportDataBtn').addEventListener('click', exportUserData);
+  
   document.getElementById('closeAdminBtn').addEventListener('click', () => {
     document.body.removeChild(adminPanel);
   });
   
+  // Close on background click
+  adminPanel.addEventListener('click', (e) => {
+    if (e.target === adminPanel) {
+      document.body.removeChild(adminPanel);
+    }
+  });
+  
   // Add admin panel styles
-  const style = document.createElement('style');
-  style.textContent = `
-    .admin-panel {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 3000;
-    }
-    
-    .admin-content {
-      background-color: white;
-      padding: 2rem;
-      border-radius: 12px;
-      max-width: 600px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-      margin: 1rem 0;
-    }
-    
-    .stat-card {
-      background-color: #f5f5f5;
-      padding: 1rem;
-      border-radius: 8px;
-      text-align: center;
-    }
-    
-    .stat-number {
-      font-size: 2rem;
-      font-weight: bold;
-      color: var(--accent);
-    }
-    
-    .stat-label {
-      font-size: 0.9rem;
-      color: #666;
-    }
-    
-    .recent-users {
-      margin-top: 1.5rem;
-    }
-    
-    .user-list {
-      max-height: 200px;
-      overflow-y: auto;
-      background-color: #f9f9f9;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-    
-    .user-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #eee;
-    }
-  `;
-  document.head.appendChild(style);
+  if (!document.getElementById('admin-styles')) {
+    const style = document.createElement('style');
+    style.id = 'admin-styles';
+    style.textContent = `
+      .admin-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      .admin-content {
+        background-color: white;
+        border-radius: 16px;
+        max-width: 700px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        animation: slideUp 0.3s ease;
+      }
+      
+      @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #eee;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 16px 16px 0 0;
+      }
+      
+      .admin-header h2 {
+        margin: 0;
+        font-size: 1.4rem;
+      }
+      
+      .close-btn {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+      
+      .close-btn:hover {
+        background: rgba(255,255,255,0.3);
+      }
+      
+      .stats-container {
+        padding: 2rem;
+      }
+      
+      .loading {
+        text-align: center;
+        color: #666;
+        padding: 2rem;
+        font-style: italic;
+      }
+      
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      
+      .stat-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #e0e6ed;
+        transition: transform 0.2s;
+      }
+      
+      .stat-card:hover {
+        transform: translateY(-2px);
+      }
+      
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+      }
+      
+      .stat-label {
+        font-size: 0.9rem;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      
+      .recent-users {
+        margin-top: 2rem;
+      }
+      
+      .recent-users h3 {
+        color: #2d3748;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .user-list {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #e9ecef;
+      }
+      
+      .user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+        transition: background 0.2s;
+      }
+      
+      .user-item:hover {
+        background-color: #e9ecef;
+      }
+      
+      .user-item:last-child {
+        border-bottom: none;
+      }
+      
+      .user-name {
+        font-weight: 500;
+        color: #2d3748;
+      }
+      
+      .user-date {
+        font-size: 0.85rem;
+        color: #718096;
+      }
+      
+      .admin-actions {
+        padding: 1.5rem 2rem;
+        border-top: 1px solid #eee;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+      
+      .action-btn {
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      
+      .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+      
+      .error-message {
+        color: #e53e3e;
+        background: #fed7d7;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        border-left: 4px solid #e53e3e;
+      }
+      
+      .no-data {
+        text-align: center;
+        color: #718096;
+        padding: 2rem;
+        font-style: italic;
+      }
+    `;
+    document.head.appendChild(style);
+  }
 }
 
 async function loadAdminStats() {
   try {
     const response = await fetch('/api/stats');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
     const data = await response.json();
     
     const statsContainer = document.getElementById('statsContainer');
     statsContainer.innerHTML = `
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-number">${data.total}</div>
+          <div class="stat-number">${data.total || 0}</div>
           <div class="stat-label">Total Users</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">${data.today}</div>
+          <div class="stat-number">${data.today || 0}</div>
           <div class="stat-label">Today</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">${data.thisWeek}</div>
+          <div class="stat-number">${data.thisWeek || 0}</div>
           <div class="stat-label">This Week</div>
         </div>
       </div>
       
       <div class="recent-users">
-        <h3>Recent Users</h3>
+        <h3>👥 Recent Users</h3>
         <div class="user-list">
-          ${data.recentUsers.map(user => `
-            <div class="user-item">
-              <span>${user.name}</span>
-              <span>${new Date(user.created_at).toLocaleDateString()}</span>
-            </div>
-          `).join('')}
+          ${(data.recentUsers || []).length > 0 
+            ? data.recentUsers.map(user => `
+              <div class="user-item">
+                <span class="user-name">${user.name}</span>
+                <span class="user-date">${new Date(user.created_at).toLocaleDateString()} at ${new Date(user.created_at).toLocaleTimeString()}</span>
+              </div>
+            `).join('')
+            : '<div class="no-data">No users registered yet</div>'
+          }
         </div>
       </div>
     `;
   } catch (error) {
     console.error('Failed to load stats:', error);
-    document.getElementById('statsContainer').innerHTML = 'Failed to load statistics.';
+    
+    const statsContainer = document.getElementById('statsContainer');
+    statsContainer.innerHTML = `
+      <div class="error-message">
+        <h4>❌ Failed to load statistics</h4>
+        <p><strong>Error:</strong> ${error.message}</p>
+        <p>Try refreshing or check the browser console for more details.</p>
+      </div>
+    `;
   }
 }
 
+async function exportUserData() {
+  try {
+    const response = await fetch('/api/users');
+    const data = await response.json();
+    
+    // Create CSV content
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + "Name,Registration Date,Registration Time\n"
+      + data.users.map(user => 
+          `"${user.name}","${new Date(user.created_at).toLocaleDateString()}","${new Date(user.created_at).toLocaleTimeString()}"`
+        ).join("\n");
+    
+    // Create download link
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `chatracter-users-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+  } catch (error) {
+    alert('Failed to export data: ' + error.message);
+  }
+}
+
+// Add floating admin button
+function addFloatingAdminButton() {
+  const adminButton = document.createElement('button');
+  adminButton.innerHTML = '📊';
+  adminButton.className = 'floating-admin-btn';
+  adminButton.title = 'View Statistics (Admin)';
+  
+  adminButton.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
+  
+  adminButton.addEventListener('click', showAdminStats);
+  
+  adminButton.addEventListener('mouseenter', () => {
+    adminButton.style.transform = 'scale(1.1)';
+    adminButton.style.boxShadow = '0 6px 25px rgba(102, 126, 234, 0.6)';
+  });
+  
+  adminButton.addEventListener('mouseleave', () => {
+    adminButton.style.transform = 'scale(1)';
+    adminButton.style.boxShadow = '0 4px 20px rgba(102, 126, 234, 0.4)';
+  });
+  
+  document.body.appendChild(adminButton);
+}
+
+// Multiple access methods
+document.addEventListener('keydown', (e) => {
+  // Ctrl + Shift + A for admin
+  if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+    e.preventDefault();
+    showAdminStats();
+  }
+});
+
+// URL parameter access
+if (window.location.search.includes('admin=true')) {
+  setTimeout(showAdminStats, 1000);
+}
+
+// Console access
+window.showStats = showAdminStats;
+
+// Add the floating button when page loads
+setTimeout(addFloatingAdminButton, 2000);
+
+
+////////////////////////////////////////////////////////////
 // Add a secret key combination to show admin stats
 // Add this to your DOMContentLoaded event listener
 let keySequence = [];
@@ -465,6 +732,10 @@ document.addEventListener('keydown', (e) => {
     keySequence = [];
   }
 });
+/////////////////////////////////////////////////////////////////////////
+
+
+
   function checkApiKey() {
     const apiKey = localStorage.getItem('openaiApiKey');
     if (!apiKey) {
@@ -472,7 +743,7 @@ document.addEventListener('keydown', (e) => {
     }
     return true;
   }
-  
+
   function enhanceCharacterHeader() {
     // Find all character header elements
     const characterHeaders = document.querySelectorAll('.character-header');
