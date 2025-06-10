@@ -475,7 +475,13 @@ body {
     padding: 0;
     margin: 0;
   }
-  
+  .profile-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  border-radius: 50% !important;
+}
   /* Enhanced Header */
   header {
     background-image: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
