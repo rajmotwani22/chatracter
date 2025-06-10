@@ -322,8 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // ADMIN CONFIGURATION
 // =========================
 const ADMIN_CONFIG = {
-  adminNames: ['admin', 'your-name-here', 'owner'], // ADD YOUR ACTUAL NAME HERE
-  adminPassword: 'admin123', // CHANGE THIS TO YOUR PASSWORD
+  adminNames: ['admin', 'Mike', 'owner'], // ADD YOUR ACTUAL NAME HERE
+  adminPassword: 'whatsnew', // CHANGE THIS TO YOUR PASSWORD
   secretCode: 'chatracter2025' // CHANGE THIS TO YOUR SECRET CODE
 };
 
