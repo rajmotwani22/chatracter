@@ -312,58 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(style);
   }
 
-// Emergency UI fix - add this to your main.js
-function fixUILayout() {
-  console.log('Applying UI fixes...');
-  
-  // Fix input wrapper positioning
-  const inputWrapper = document.querySelector('.chat-input-wrapper');
-  if (inputWrapper) {
-    inputWrapper.style.position = 'fixed';
-    inputWrapper.style.bottom = '0';
-    inputWrapper.style.left = '0';
-    inputWrapper.style.right = '0';
-    inputWrapper.style.background = 'white';
-    inputWrapper.style.padding = '1rem';
-    inputWrapper.style.borderTop = '1px solid #e0e0e0';
-    inputWrapper.style.zIndex = '100';
-  }
-  
-  // Fix chat messages container
-  const chatMessages = document.getElementById('chatMessages');
-  if (chatMessages) {
-    chatMessages.style.paddingBottom = '100px';
-    chatMessages.style.overflowY = 'auto';
-  }
-  
-  // Fix features row
-  const featuresRow = document.querySelector('.features-row');
-  if (featuresRow) {
-    featuresRow.style.position = 'fixed';
-    featuresRow.style.bottom = '80px';
-    featuresRow.style.left = '50%';
-    featuresRow.style.transform = 'translateX(-50%)';
-    featuresRow.style.zIndex = '99';
-  }
-  
-  // Fix floating admin button
-  const adminBtn = document.querySelector('.floating-admin-btn');
-  if (adminBtn) {
-    adminBtn.style.bottom = '150px';
-  }
-}
 
-// Call the fix when page loads
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(fixUILayout, 1000); // Wait a bit for elements to load
-});
-
-// Also call it when switching characters or modes
-const originalSelectCharacter = selectCharacter;
-selectCharacter = function(character) {
-  originalSelectCharacter(character);
-  setTimeout(fixUILayout, 100);
-};
 // Admin Panel Functions - Add these to your main.js
 // Replace your admin functions in main.js with these secure versions
 // COMPLETE SECURE ADMIN SYSTEM
