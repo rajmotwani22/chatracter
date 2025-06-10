@@ -1,9 +1,9 @@
-// 3. Create a new file: api/stats.js
-// This will provide simple analytics
 
-import { sql } from '@vercel/postgres';
+const { sql } = require('@vercel/postgres');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  console.log('Stats API called:', req.method);
+  
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -18,6 +18,19 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('Fetching stats...');
+    
+    // Ensure table exists first
+    await sql`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        ip_address INET,
+        user_agent TEXT
+      );
+    `;
+    
     // Get basic stats
     const totalUsers = await sql`SELECT COUNT(*) as total FROM users`;
     
@@ -40,12 +53,16 @@ export default async function handler(req, res) {
       LIMIT 10
     `;
 
-    return res.status(200).json({
+    const stats = {
       total: parseInt(totalUsers.rows[0].total),
       today: parseInt(todayUsers.rows[0].today),
       thisWeek: parseInt(thisWeekUsers.rows[0].week),
       recentUsers: recentUsers.rows
-    });
+    };
+    
+    console.log('Stats fetched successfully:', stats);
+
+    return res.status(200).json(stats);
 
   } catch (error) {
     console.error('Stats error:', error);
@@ -54,4 +71,4 @@ export default async function handler(req, res) {
       details: error.message 
     });
   }
-}
+};
