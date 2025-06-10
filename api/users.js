@@ -1,7 +1,9 @@
 
-import { sql } from '@vercel/postgres';
+const { sql } = require('@vercel/postgres');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  console.log('Users API called:', req.method);
+  
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -23,6 +25,7 @@ export default async function handler(req, res) {
         user_agent TEXT
       );
     `;
+    console.log('Table created/checked successfully');
 
     if (req.method === 'POST') {
       // Add new user
@@ -33,8 +36,10 @@ export default async function handler(req, res) {
       }
 
       // Get user's IP and user agent for basic tracking
-      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-      const userAgent = req.headers['user-agent'];
+      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+      const userAgent = req.headers['user-agent'] || 'unknown';
+
+      console.log('Attempting to add user:', name, 'IP:', ip);
 
       // Check if user with same name and IP already exists (to avoid duplicates)
       const existingUser = await sql`
@@ -51,12 +56,15 @@ export default async function handler(req, res) {
           RETURNING id, name, created_at;
         `;
         
+        console.log('User added successfully:', result.rows[0]);
+        
         return res.status(201).json({ 
           success: true, 
           user: result.rows[0],
           message: 'User registered successfully' 
         });
       } else {
+        console.log('User already exists');
         return res.status(200).json({ 
           success: true, 
           message: 'User already registered recently' 
@@ -82,6 +90,8 @@ export default async function handler(req, res) {
         limit: parseInt(limit),
         offset: parseInt(offset)
       });
+    } else {
+      return res.status(405).json({ error: 'Method not allowed' });
     }
 
   } catch (error) {
@@ -91,4 +101,4 @@ export default async function handler(req, res) {
       details: error.message 
     });
   }
-}
+};
