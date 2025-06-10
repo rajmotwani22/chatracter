@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           
           <button id="startAppBtn" class="welcome-button">Start Chatting</button>
+          <div id="welcomeStatus" class="welcome-status"></div>
         </div>
       </div>
     `;
@@ -131,12 +132,61 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(welcomeScreen);
     
     // Add event listener to the start button
-    document.getElementById('startAppBtn').addEventListener('click', () => {
+    document.getElementById('startAppBtn').addEventListener('click', async () => {
       const name = document.getElementById('userName').value.trim();
+      const startBtn = document.getElementById('startAppBtn');
+      const statusDiv = document.getElementById('welcomeStatus');
+      
       if (name) {
-        userInfo.name = name;
-        localStorage.setItem('userName', name);
-        document.body.removeChild(welcomeScreen);
+        // Show loading state
+        startBtn.textContent = 'Registering...';
+        startBtn.disabled = true;
+        statusDiv.textContent = 'Setting up your profile...';
+        statusDiv.className = 'welcome-status loading';
+        
+        try {
+          // Register user in database
+          const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: name }),
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            // Save to localStorage
+            userInfo.name = name;
+            localStorage.setItem('userName', name);
+            
+            // Show success message briefly
+            statusDiv.textContent = 'Welcome aboard! 🎉';
+            statusDiv.className = 'welcome-status success';
+            
+            // Remove welcome screen after a short delay
+            setTimeout(() => {
+              document.body.removeChild(welcomeScreen);
+            }, 1000);
+          } else {
+            throw new Error(data.error || 'Registration failed');
+          }
+          
+        } catch (error) {
+          console.error('Registration error:', error);
+          
+          // Still allow user to continue even if DB fails
+          userInfo.name = name;
+          localStorage.setItem('userName', name);
+          
+          statusDiv.textContent = 'Welcome! (Offline mode)';
+          statusDiv.className = 'welcome-status warning';
+          
+          setTimeout(() => {
+            document.body.removeChild(welcomeScreen);
+          }, 1500);
+        }
       } else {
         // Shake the input to indicate it's required
         const input = document.getElementById('userName');
@@ -145,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     
-    // Add styles for the welcome screen
+    // Add styles for the welcome screen (updated with status styles)
     const style = document.createElement('style');
     style.textContent = `
       .welcome-screen {
@@ -217,8 +267,36 @@ document.addEventListener('DOMContentLoaded', () => {
         transition: background-color 0.2s ease;
       }
       
-      .welcome-button:hover {
+      .welcome-button:hover:not(:disabled) {
         background-color: #2a78f0;
+      }
+      
+      .welcome-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      
+      .welcome-status {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        transition: all 0.3s ease;
+      }
+      
+      .welcome-status.loading {
+        background-color: #e3f2fd;
+        color: #1976d2;
+      }
+      
+      .welcome-status.success {
+        background-color: #e8f5e8;
+        color: #2e7d32;
+      }
+      
+      .welcome-status.warning {
+        background-color: #fff3e0;
+        color: #f57c00;
       }
       
       .shake {
@@ -233,7 +311,160 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(style);
   }
+// Add a new function to show admin stats (add this to your main.js)
+function showAdminStats() {
+  // Only show if you're the admin (you can check by name or add a secret)
+  if (userInfo.name !== 'YOUR_ADMIN_NAME_HERE') {
+    return;
+  }
+  
+  // Create admin panel
+  const adminPanel = document.createElement('div');
+  adminPanel.className = 'admin-panel';
+  adminPanel.innerHTML = `
+    <div class="admin-content">
+      <h2>📊 App Statistics</h2>
+      <div id="statsContainer">Loading...</div>
+      <button id="closeAdminBtn">Close</button>
+    </div>
+  `;
+  
+  document.body.appendChild(adminPanel);
+  
+  // Load stats
+  loadAdminStats();
+  
+  // Close button
+  document.getElementById('closeAdminBtn').addEventListener('click', () => {
+    document.body.removeChild(adminPanel);
+  });
+  
+  // Add admin panel styles
+  const style = document.createElement('style');
+  style.textContent = `
+    .admin-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+    
+    .admin-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .stat-card {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+    }
+    
+    .recent-users {
+      margin-top: 1.5rem;
+    }
+    
+    .user-list {
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    
+    .user-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
+async function loadAdminStats() {
+  try {
+    const response = await fetch('/api/stats');
+    const data = await response.json();
+    
+    const statsContainer = document.getElementById('statsContainer');
+    statsContainer.innerHTML = `
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">${data.total}</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${data.today}</div>
+          <div class="stat-label">Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${data.thisWeek}</div>
+          <div class="stat-label">This Week</div>
+        </div>
+      </div>
+      
+      <div class="recent-users">
+        <h3>Recent Users</h3>
+        <div class="user-list">
+          ${data.recentUsers.map(user => `
+            <div class="user-item">
+              <span>${user.name}</span>
+              <span>${new Date(user.created_at).toLocaleDateString()}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    console.error('Failed to load stats:', error);
+    document.getElementById('statsContainer').innerHTML = 'Failed to load statistics.';
+  }
+}
+
+// Add a secret key combination to show admin stats
+// Add this to your DOMContentLoaded event listener
+let keySequence = [];
+document.addEventListener('keydown', (e) => {
+  keySequence.push(e.key);
+  if (keySequence.length > 10) keySequence.shift();
+  
+  // Secret combination: "admin" + Enter
+  if (keySequence.slice(-6).join('').toLowerCase() === 'admin' && e.key === 'Enter') {
+    showAdminStats();
+    keySequence = [];
+  }
+});
   function checkApiKey() {
     const apiKey = localStorage.getItem('openaiApiKey');
     if (!apiKey) {
