@@ -1202,7 +1202,242 @@ body {
     background-color: var(--background);
     position: relative;
   }
+/* EMERGENCY UI FIXES - Add these CSS rules to fix the layout */
+/* Add this to your CSS file or in a <style> tag */
+
+/* Fix the main chat container layout */
+.chat-container {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* Fix the chat messages area */
+#chatMessages {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 1rem !important;
+  margin-bottom: 0 !important;
+}
+
+/* Fix the input wrapper positioning */
+.chat-input-wrapper {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: white !important;
+  border-top: 1px solid #e0e0e0 !important;
+  padding: 1rem !important;
+  z-index: 100 !important;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix the input container */
+.input-container {
+  display: flex !important;
+  gap: 0.5rem !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  align-items: center !important;
+}
+
+/* Fix the message input */
+#messageInput {
+  flex: 1 !important;
+  padding: 0.75rem 1rem !important;
+  border: 1px solid #ddd !important;
+  border-radius: 25px !important;
+  font-size: 1rem !important;
+  outline: none !important;
+  background: white !important;
+}
+
+/* Fix the send button */
+#sendButton {
+  padding: 0.75rem 1.5rem !important;
+  background: var(--accent, #4285f4) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 25px !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+#sendButton:hover {
+  background: var(--accent-dark, #3367d6) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Fix the features row positioning */
+.features-row {
+  position: fixed !important;
+  bottom: 80px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  gap: 0.5rem !important;
+  z-index: 99 !important;
+}
+
+/* Fix feature buttons */
+.feature-button {
+  padding: 0.5rem 1rem !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #ddd !important;
+  border-radius: 20px !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.feature-button:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  transform: translateY(-2px) !important;
+}
+
+.feature-button.active {
+  background: var(--accent, #4285f4) !important;
+  color: white !important;
+  border-color: var(--accent, #4285f4) !important;
+}
+
+/* Add padding to body to prevent overlap */
+body {
+  padding-bottom: 140px !important;
+}
+
+/* Fix the character selector if it's overlapping */
+.character-select {
+  margin-bottom: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+/* Fix floating admin button positioning */
+.floating-admin-btn {
+  position: fixed !important;
+  bottom: 150px !important;
+  right: 20px !important;
+  z-index: 1000 !important;
+}
+
+/* Responsive fixes for mobile */
+@media (max-width: 768px) {
+  .chat-input-wrapper {
+    padding: 0.75rem !important;
+  }
   
+  .features-row {
+    bottom: 70px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+  
+  .feature-button {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  body {
+    padding-bottom: 120px !important;
+  }
+  
+  .floating-admin-btn {
+    bottom: 130px !important;
+    right: 15px !important;
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 20px !important;
+  }
+}
+
+/* Dark mode fixes */
+.dark-mode .chat-input-wrapper {
+  background: #2d3748 !important;
+  border-top-color: #4a5568 !important;
+}
+
+.dark-mode #messageInput {
+  background: #4a5568 !important;
+  border-color: #718096 !important;
+  color: white !important;
+}
+
+.dark-mode #messageInput::placeholder {
+  color: #a0aec0 !important;
+}
+
+.dark-mode .feature-button {
+  background: rgba(45, 55, 72, 0.9) !important;
+  border-color: #4a5568 !important;
+  color: white !important;
+}
+
+.dark-mode .feature-button:hover {
+  background: rgba(45, 55, 72, 1) !important;
+}
+
+/* Alternative layout if the above doesn't work */
+/* Remove the position: fixed and try this instead */
+.alternative-layout .chat-input-wrapper {
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  margin-top: auto !important;
+}
+
+/* Example questions styling fix */
+.example-questions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+  margin-top: 1rem !important;
+  justify-content: center !important;
+}
+
+.example-question {
+  padding: 0.5rem 1rem !important;
+  background: #f0f2f5 !important;
+  border: none !important;
+  border-radius: 20px !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.example-question:hover {
+  background: #e4e6ea !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Override any conflicting styles */
+* {
+  box-sizing: border-box !important;
+}
+
+/* Ensure main container doesn't have conflicting positioning */
+.main-content,
+.app-content,
+.container {
+  position: relative !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* Quick fix for immediate testing */
+.quick-fix {
+  /* Add this class to your chat container if needed */
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  padding-bottom: 100px !important;
+}
 /* Important fix for profile description */
 .profile-description {
     text-align: left;
