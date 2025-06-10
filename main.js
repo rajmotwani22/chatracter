@@ -315,7 +315,325 @@ document.addEventListener('DOMContentLoaded', () => {
 // Add them inside the DOMContentLoaded event listener
 
 // Admin Panel Functions - Add these to your main.js
+// Replace your admin functions in main.js with these secure versions
 
+// Admin configuration - Change these to your preferences
+const ADMIN_CONFIG = {
+  // Method 1: Admin names (case-insensitive)
+  adminNames: ['admin', 'your-name-here', 'owner'], // Add your actual name here
+  
+  // Method 2: Admin password (simple but effective)
+  adminPassword: 'admin123', // Change this to your preferred password
+  
+  // Method 3: Secret code
+  secretCode: 'chatracter2025' // Change this to your preferred code
+};
+
+// Check if current user is admin
+function isCurrentUserAdmin() {
+  const currentName = userInfo.name;
+  if (!currentName) return false;
+  
+  // Check if current user's name is in admin list
+  return ADMIN_CONFIG.adminNames.some(adminName => 
+    adminName.toLowerCase() === currentName.toLowerCase()
+  );
+}
+
+// Show admin login prompt
+function showAdminLogin() {
+  const loginModal = document.createElement('div');
+  loginModal.className = 'admin-login-modal';
+  loginModal.innerHTML = `
+    <div class="admin-login-content">
+      <h2>🔐 Admin Access Required</h2>
+      <p>Choose your authentication method:</p>
+      
+      <div class="admin-auth-methods">
+        <div class="auth-method">
+          <h3>Method 1: Admin Name</h3>
+          <p>Current user: <strong>${userInfo.name || 'Not set'}</strong></p>
+          ${isCurrentUserAdmin() ? 
+            '<p class="success">✅ You are authorized as admin!</p>' :
+            '<p class="error">❌ Your name is not in the admin list</p>'
+          }
+          <button id="nameAuthBtn" ${isCurrentUserAdmin() ? '' : 'disabled'}>
+            ${isCurrentUserAdmin() ? 'Access Admin Panel' : 'Not Authorized'}
+          </button>
+        </div>
+        
+        <div class="auth-method">
+          <h3>Method 2: Admin Password</h3>
+          <input type="password" id="adminPasswordInput" placeholder="Enter admin password">
+          <button id="passwordAuthBtn">Login with Password</button>
+        </div>
+        
+        <div class="auth-method">
+          <h3>Method 3: Secret Code</h3>
+          <input type="text" id="secretCodeInput" placeholder="Enter secret code">
+          <button id="codeAuthBtn">Login with Code</button>
+        </div>
+      </div>
+      
+      <div class="login-actions">
+        <button id="cancelLoginBtn" class="cancel-btn">Cancel</button>
+      </div>
+      
+      <div class="admin-help">
+        <details>
+          <summary>Help for Admin</summary>
+          <p><strong>For the app owner:</strong></p>
+          <ul>
+            <li>Add your name to <code>adminNames</code> in the code</li>
+            <li>Change the <code>adminPassword</code> to something secure</li>
+            <li>Update the <code>secretCode</code> to your preference</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(loginModal);
+  
+  // Event listeners
+  document.getElementById('nameAuthBtn').addEventListener('click', () => {
+    if (isCurrentUserAdmin()) {
+      document.body.removeChild(loginModal);
+      showAdminStats();
+    }
+  });
+  
+  document.getElementById('passwordAuthBtn').addEventListener('click', () => {
+    const password = document.getElementById('adminPasswordInput').value;
+    if (password === ADMIN_CONFIG.adminPassword) {
+      document.body.removeChild(loginModal);
+      showAdminStats();
+    } else {
+      showAuthError('Invalid password');
+    }
+  });
+  
+  document.getElementById('codeAuthBtn').addEventListener('click', () => {
+    const code = document.getElementById('secretCodeInput').value;
+    if (code === ADMIN_CONFIG.secretCode) {
+      document.body.removeChild(loginModal);
+      showAdminStats();
+    } else {
+      showAuthError('Invalid secret code');
+    }
+  });
+  
+  document.getElementById('cancelLoginBtn').addEventListener('click', () => {
+    document.body.removeChild(loginModal);
+  });
+  
+  // Close on background click
+  loginModal.addEventListener('click', (e) => {
+    if (e.target === loginModal) {
+      document.body.removeChild(loginModal);
+    }
+  });
+  
+  // Add styles for login modal
+  if (!document.getElementById('admin-login-styles')) {
+    const style = document.createElement('style');
+    style.id = 'admin-login-styles';
+    style.textContent = `
+      .admin-login-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 11000;
+        animation: fadeIn 0.3s ease;
+      }
+      
+      .admin-login-content {
+        background-color: white;
+        border-radius: 16px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        animation: slideUp 0.3s ease;
+      }
+      
+      .admin-login-content h2 {
+        color: #2d3748;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      
+      .admin-auth-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+      
+      .auth-method {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        background: #f8f9fa;
+      }
+      
+      .auth-method h3 {
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+      }
+      
+      .auth-method p {
+        margin: 0.5rem 0;
+        font-size: 0.9rem;
+      }
+      
+      .auth-method input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #cbd5e0;
+        border-radius: 8px;
+        margin: 0.5rem 0;
+        font-size: 1rem;
+      }
+      
+      .auth-method button {
+        width: 100%;
+        padding: 0.75rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        margin-top: 0.5rem;
+      }
+      
+      .auth-method button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+      
+      .auth-method button:disabled {
+        background: #cbd5e0;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      
+      .success {
+        color: #38a169;
+        font-weight: 500;
+      }
+      
+      .error {
+        color: #e53e3e;
+        font-weight: 500;
+      }
+      
+      .login-actions {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+      }
+      
+      .cancel-btn {
+        padding: 0.75rem 2rem;
+        background: #718096;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+      
+      .cancel-btn:hover {
+        background: #4a5568;
+      }
+      
+      .admin-help {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+      }
+      
+      .admin-help details {
+        font-size: 0.85rem;
+        color: #718096;
+      }
+      
+      .admin-help summary {
+        cursor: pointer;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+      
+      .admin-help ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+      }
+      
+      .admin-help code {
+        background: #edf2f7;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-family: monospace;
+      }
+      
+      .auth-error {
+        background: #fed7d7;
+        color: #c53030;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin: 0.5rem 0;
+        border-left: 4px solid #e53e3e;
+        animation: shake 0.5s ease;
+      }
+      
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
+
+function showAuthError(message) {
+  // Remove existing error
+  const existingError = document.querySelector('.auth-error');
+  if (existingError) {
+    existingError.remove();
+  }
+  
+  // Add new error
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'auth-error';
+  errorDiv.textContent = message;
+  
+  const loginContent = document.querySelector('.admin-login-content');
+  loginContent.insertBefore(errorDiv, loginContent.querySelector('.login-actions'));
+  
+  // Remove error after 3 seconds
+  setTimeout(() => {
+    if (errorDiv.parentNode) {
+      errorDiv.remove();
+    }
+  }, 3000);
+}
+
+// Updated showAdminStats function (same as before, but now called only after authentication)
 function showAdminStats() {
   console.log('Opening admin panel...');
   
@@ -326,6 +644,7 @@ function showAdminStats() {
     <div class="admin-content">
       <div class="admin-header">
         <h2>📊 Chatracter App Statistics</h2>
+        <div class="admin-user-info">Logged in as: <strong>${userInfo.name || 'Admin'}</strong></div>
         <button id="closeAdminBtn" class="close-btn">×</button>
       </div>
       <div id="statsContainer" class="stats-container">
@@ -334,6 +653,7 @@ function showAdminStats() {
       <div class="admin-actions">
         <button id="refreshStatsBtn" class="action-btn">🔄 Refresh</button>
         <button id="exportDataBtn" class="action-btn">📁 Export Data</button>
+        <button id="logoutAdminBtn" class="action-btn logout-btn">🚪 Logout</button>
       </div>
     </div>
   `;
@@ -351,6 +671,11 @@ function showAdminStats() {
   
   document.getElementById('exportDataBtn').addEventListener('click', exportUserData);
   
+  document.getElementById('logoutAdminBtn').addEventListener('click', () => {
+    document.body.removeChild(adminPanel);
+    alert('Logged out of admin panel');
+  });
+  
   document.getElementById('closeAdminBtn').addEventListener('click', () => {
     document.body.removeChild(adminPanel);
   });
@@ -362,7 +687,7 @@ function showAdminStats() {
     }
   });
   
-  // Add admin panel styles
+  // Update admin styles to include user info
   if (!document.getElementById('admin-styles')) {
     const style = document.createElement('style');
     style.id = 'admin-styles';
@@ -381,11 +706,6 @@ function showAdminStats() {
         animation: fadeIn 0.3s ease;
       }
       
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      
       .admin-content {
         background-color: white;
         border-radius: 16px;
@@ -397,11 +717,6 @@ function showAdminStats() {
         animation: slideUp 0.3s ease;
       }
       
-      @keyframes slideUp {
-        from { transform: translateY(50px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-      }
-      
       .admin-header {
         display: flex;
         justify-content: space-between;
@@ -411,6 +726,17 @@ function showAdminStats() {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border-radius: 16px 16px 0 0;
+        position: relative;
+      }
+      
+      .admin-user-info {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.85rem;
+        background: rgba(255,255,255,0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
       }
       
       .admin-header h2 {
@@ -437,141 +763,103 @@ function showAdminStats() {
         background: rgba(255,255,255,0.3);
       }
       
-      .stats-container {
-        padding: 2rem;
+      .logout-btn {
+        background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%) !important;
       }
       
-      .loading {
-        text-align: center;
-        color: #666;
-        padding: 2rem;
-        font-style: italic;
+      .logout-btn:hover {
+        box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4) !important;
       }
       
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
-      
-      .stat-card {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        padding: 1.5rem;
-        border-radius: 12px;
-        text-align: center;
-        border: 1px solid #e0e6ed;
-        transition: transform 0.2s;
-      }
-      
-      .stat-card:hover {
-        transform: translateY(-2px);
-      }
-      
-      .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #2d3748;
-        margin-bottom: 0.5rem;
-      }
-      
-      .stat-label {
-        font-size: 0.9rem;
-        color: #718096;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      
-      .recent-users {
-        margin-top: 2rem;
-      }
-      
-      .recent-users h3 {
-        color: #2d3748;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      
-      .user-list {
-        background-color: #f8f9fa;
-        border-radius: 12px;
-        max-height: 300px;
-        overflow-y: auto;
-        border: 1px solid #e9ecef;
-      }
-      
-      .user-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid #e9ecef;
-        transition: background 0.2s;
-      }
-      
-      .user-item:hover {
-        background-color: #e9ecef;
-      }
-      
-      .user-item:last-child {
-        border-bottom: none;
-      }
-      
-      .user-name {
-        font-weight: 500;
-        color: #2d3748;
-      }
-      
-      .user-date {
-        font-size: 0.85rem;
-        color: #718096;
-      }
-      
-      .admin-actions {
-        padding: 1.5rem 2rem;
-        border-top: 1px solid #eee;
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-      }
-      
-      .action-btn {
-        padding: 0.75rem 1.5rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.2s;
-      }
-      
-      .action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-      }
-      
-      .error-message {
-        color: #e53e3e;
-        background: #fed7d7;
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        border-left: 4px solid #e53e3e;
-      }
-      
-      .no-data {
-        text-align: center;
-        color: #718096;
-        padding: 2rem;
-        font-style: italic;
-      }
+      /* Include all previous admin styles here as well */
+      .stats-container { padding: 2rem; }
+      .loading { text-align: center; color: #666; padding: 2rem; font-style: italic; }
+      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+      .stat-card { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 1.5rem; border-radius: 12px; text-align: center; border: 1px solid #e0e6ed; transition: transform 0.2s; }
+      .stat-card:hover { transform: translateY(-2px); }
+      .stat-number { font-size: 2.5rem; font-weight: bold; color: #2d3748; margin-bottom: 0.5rem; }
+      .stat-label { font-size: 0.9rem; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; }
+      .recent-users { margin-top: 2rem; }
+      .recent-users h3 { color: #2d3748; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+      .user-list { background-color: #f8f9fa; border-radius: 12px; max-height: 300px; overflow-y: auto; border: 1px solid #e9ecef; }
+      .user-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid #e9ecef; transition: background 0.2s; }
+      .user-item:hover { background-color: #e9ecef; }
+      .user-item:last-child { border-bottom: none; }
+      .user-name { font-weight: 500; color: #2d3748; }
+      .user-date { font-size: 0.85rem; color: #718096; }
+      .admin-actions { padding: 1.5rem 2rem; border-top: 1px solid #eee; display: flex; gap: 1rem; justify-content: center; }
+      .action-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+      .action-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+      .error-message { color: #e53e3e; background: #fed7d7; padding: 1rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid #e53e3e; }
+      .no-data { text-align: center; color: #718096; padding: 2rem; font-style: italic; }
     `;
     document.head.appendChild(style);
   }
 }
+
+// Updated floating admin button - now shows login first
+function addFloatingAdminButton() {
+  const adminButton = document.createElement('button');
+  adminButton.innerHTML = '📊';
+  adminButton.className = 'floating-admin-btn';
+  adminButton.title = 'Admin Login';
+  
+  adminButton.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
+  
+  // Show login instead of direct admin access
+  adminButton.addEventListener('click', showAdminLogin);
+  
+  adminButton.addEventListener('mouseenter', () => {
+    adminButton.style.transform = 'scale(1.1)';
+    adminButton.style.boxShadow = '0 6px 25px rgba(102, 126, 234, 0.6)';
+  });
+  
+  adminButton.addEventListener('mouseleave', () => {
+    adminButton.style.transform = 'scale(1)';
+    adminButton.style.boxShadow = '0 4px 20px rgba(102, 126, 234, 0.4)';
+  });
+  
+  document.body.appendChild(adminButton);
+}
+
+// Updated access methods - all go through login first
+document.addEventListener('keydown', (e) => {
+  // Ctrl + Shift + A for admin login
+  if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+    e.preventDefault();
+    showAdminLogin();
+  }
+});
+
+// URL parameter access
+if (window.location.search.includes('admin=true')) {
+  setTimeout(showAdminLogin, 1000);
+}
+
+// Console access
+window.showAdminLogin = showAdminLogin;
+window.showStats = showAdminLogin; // Redirect to login
+
+// Keep your existing loadAdminStats and exportUserData functions unchanged
+// [Previous functions remain the same]
 
 async function loadAdminStats() {
   try {
@@ -721,6 +1009,7 @@ setTimeout(addFloatingAdminButton, 2000);
 ////////////////////////////////////////////////////////////
 // Add a secret key combination to show admin stats
 // Add this to your DOMContentLoaded event listener
+/*
 let keySequence = [];
 document.addEventListener('keydown', (e) => {
   keySequence.push(e.key);
@@ -733,7 +1022,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 /////////////////////////////////////////////////////////////////////////
-
+*/
 
 
   function checkApiKey() {
